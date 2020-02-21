@@ -1,3 +1,10 @@
-import './index.html'
+require('regenerator-runtime')
 
-console.log('OK')
+window.React = require('react')
+window.ReactDOM = require('react-dom')
+
+require('vendor/gapi')
+
+require('local/gservice')
+// require('local/ui')
+require('local/index.html')

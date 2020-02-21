@@ -14,6 +14,13 @@ module.exports = {
 		filename: '[name]'
 	},
 
+	resolve: {
+		alias: {
+			'local': resolve(__dirname, 'src'),
+			'vendor': resolve(__dirname, 'vendor')
+		}
+	},
+
 	module: { rules: [
 		{
 			test: /\.js$/,
