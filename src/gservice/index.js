@@ -6,6 +6,7 @@ window.GService = { $: {
 require('./config')
 require('./api')
 require('./lib')
+require('./item')
 
 
 gapi.load('client:auth2', async () => {
