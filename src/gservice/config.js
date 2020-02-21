@@ -10,5 +10,6 @@ GService.DB_TABLES = [
 	'checklists',
 	'checklistItems',
 	'documents',
-	'labels'
+	'labels',
+	'toggles'
 ]

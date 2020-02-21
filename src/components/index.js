@@ -1,1 +1,2 @@
-require('./document.js')
+require('./document')
+require('./toggle')
