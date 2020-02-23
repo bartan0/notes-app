@@ -1,6 +1,6 @@
 DocumentComponent = class extends GService.Item {
 
-	TABLE = 'documents'
+	static table = 'documents'
 
 	constructor (content = '') {
 		super()

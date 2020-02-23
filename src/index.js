@@ -7,5 +7,6 @@ require('vendor/gapi')
 
 require('local/gservice')
 require('local/components')
+require('local/note')
 // require('local/ui')
 require('local/index.html')

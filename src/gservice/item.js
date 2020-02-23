@@ -2,11 +2,10 @@ GService.Item = class {
 
 	static table = null
 
+	index = null
 
-	constructor (
-		index = null
-	) {
-		this.index = index
+
+	constructor () {
 		this.dateCreated = new Date()
 	}
 
@@ -23,7 +22,7 @@ GService.Item = class {
 
 
 	static loadAll () {
-		return new Promise((resolve, reject) => GService.getAll(this.table)
+		return new Promise((resolve, reject) => GService.getAll(this.constructor.table)
 			.then(rows => resolve(rows.map((row, index) => {
 				item = new this
 				item.index = index + 1
@@ -36,12 +35,24 @@ GService.Item = class {
 	}
 
 
+	static loadOne (index) {
+		return new Promise((resolve, reject) => {
+			const item = new this
+
+			item.index = index
+			item.load()
+				.then(() => resolve(item))
+				.catch(reject)
+		})
+	}
+
+
 	fromArray () {}
 
 
 	load () {
 		return new Promise((resolve, reject) => this.index
-			? GService.getRow(this.table, this.index)
+			? GService.getRow(this.constructor.table, this.index)
 				.then(row => {
 					this._fromArray(row)
 					resolve()
@@ -54,10 +65,10 @@ GService.Item = class {
 
 	save () {
 		return new Promise((resolve, reject) => this.index
-			? GService.updateRow(this.table, this.index, this._toArray())
+			? GService.updateRow(this.constructor.table, this.index, this._toArray())
 				.then(resolve)
 				.catch(reject)
-			: GService.addRow(this.table, this._toArray())
+			: GService.addRow(this.constructor.table, this._toArray())
 				.then(index => {
 					this.index = index
 					resolve()
