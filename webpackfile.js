@@ -31,6 +31,9 @@ module.exports = {
 						targets: '> 1%, not dead'
 					} ],
 					'@babel/preset-react'
+				],
+				plugins: [
+					'@babel/plugin-proposal-class-properties'
 				]
 			}
 		}, {
