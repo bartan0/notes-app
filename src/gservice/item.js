@@ -1,23 +1,38 @@
 GService.Item = class {
 
+	static table = null
+
+
 	constructor (
-		table,
 		index = null
 	) {
-		this.table = table
 		this.index = index
 		this.dateCreated = new Date()
 	}
 
 
 	_fromArray([ tsCreated, ...rest ]) {
-		this.dateCreated = new Date(tsCreated)
+		this.dateCreated = new Date(+tsCreated)
 		this.fromArray(rest)
 	}
 
 
 	_toArray () {
 		return [ +this.dateCreated, ...this.toArray() ]
+	}
+
+
+	static loadAll () {
+		return new Promise((resolve, reject) => GService.getAll(this.table)
+			.then(rows => resolve(rows.map((row, index) => {
+				item = new this
+				item.index = index + 1
+				item._fromArray(row)
+
+				return item
+			})))
+			.catch(reject)
+		)
 	}
 
 

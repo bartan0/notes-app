@@ -1,11 +1,12 @@
 ToggleComponent = class extends GService.Item {
 
+	static table = 'toggles'
+
 	constructor (
 		state = false,
 		content = '',
-		index
 	) {
-		super('toggles', index)
+		super()
 
 		this.state = state
 		this.content = content

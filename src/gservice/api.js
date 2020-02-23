@@ -45,6 +45,19 @@ GService.addRow = (table, row) => new Promise((resolve, reject) => {
 })
 
 
+GService.getAll = table => new Promise((resolve, reject) => {
+	if (!GService.$.dbFileId)
+		return reject('not-connected')
+
+	gapi.client.sheets.spreadsheets.values.get({
+		spreadsheetId: GService.$.dbFileId,
+		range: table
+	})
+		.then(({ result: { values } }) => resolve(values))
+		.catch(reject)
+})
+
+
 GService.getRow = (table, index) => new Promise((resolve, reject) => {
 	if (!GService.$.dbFileId)
 		return reject('not-connected')

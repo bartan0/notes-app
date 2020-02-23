@@ -1,7 +1,9 @@
 DocumentComponent = class extends GService.Item {
 
-	constructor (content = '', index) {
-		super('documents', index)
+	TABLE = 'documents'
+
+	constructor (content = '') {
+		super()
 
 		this.content = content
 	}
