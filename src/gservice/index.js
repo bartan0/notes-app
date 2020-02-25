@@ -1,5 +1,9 @@
-window.GService = { $: {
-	dbFileId: null
+GService = { $: {
+	dbFileId: null,
+	listeners: {
+		signIn: [],
+		signOut: []
+	}
 } }
 
 

@@ -5,12 +5,7 @@ GService.DISCOVERY_DOCS = [
 	'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
 ]
 GService.AUTH_SCOPES = [ 'profile', 'email', 'https://www.googleapis.com/auth/drive' ]
-GService.DB_FILENAME = '__database-test'
-GService.DB_TABLES = [
-	'checklists',
-	'checklistItems',
-	'documents',
-	'labels',
-	'notes',
-	'toggles'
-]
+GService.DB_FILENAME = '_database-test'
+GService.ROOT_NODE_ID = '_00000000000000000000000000000001'
+GService.ROOT_NODE_PID = '_00000000000000000000000000000000'
+GService.ROOT_NODE_TYPE = '_ROOT'
