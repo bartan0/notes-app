@@ -1,12 +1,14 @@
 require('regenerator-runtime')
 
-window.React = require('react')
-window.ReactDOM = require('react-dom')
+React = require('react')
+ReactDOM = require('react-dom')
+uuid = require('uuid/v4')
 
 require('vendor/gapi')
 
-require('local/gservice')
-require('local/components')
-require('local/note')
-// require('local/ui')
-require('local/index.html')
+require('./gservice')
+require('./components')
+// require('./ui')
+require('./index.html')
+
+require('./test')
