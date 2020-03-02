@@ -17,7 +17,7 @@ module.exports = DataNode => {
 						this.id,
 						this.parent.id,
 						this.type,
-						[]
+						this.toArray()
 					)
 						.then(index => {
 							this.index = index
@@ -32,8 +32,8 @@ module.exports = DataNode => {
 						.then(() => this.save())
 			}
 
-			const res = GService.addNodeRootIndex(this.id, this.type, []) // TODO: data
-				.then(index => { this.index = index }) // TODO: data
+			const res = GService.addNodeRootIndex(this.id, this.type, this.toArray())
+				.then(index => { this.index = index })
 
 			return recursive
 				? res.then(() => this.saveChildren(true))
@@ -59,7 +59,8 @@ module.exports = DataNode => {
 		const res = GService.getNodes([ this.index ], true)
 			.then(([ { childIndexes, type, data } ]) => {
 				this.childrenIndexes = childIndexes
-				this.data = data // TODO: data
+
+				this.fromArray(data)
 			})
 
 		if (!recursive)
@@ -103,4 +104,12 @@ module.exports = DataNode => {
 
 		this.children.splice(i, 1)
 	}
+
+
+	DataNode.prototype.toArray = function () {
+		return []
+	}
+
+
+	DataNode.prototype.fromArray = function (items) {}
 }

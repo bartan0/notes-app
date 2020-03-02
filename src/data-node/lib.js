@@ -10,7 +10,8 @@ module.exports = DataNode => {
 				node.index = index
 				node.type = type
 				node.childrenIndexes = childIndexes
-				// TODO: data
+
+				node.fromArray(data)
 
 				return node
 			}))
