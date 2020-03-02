@@ -16,6 +16,7 @@ module.exports = {
 
 	resolve: {
 		alias: {
+			'local': resolve(__dirname, 'src'),
 			'vendor': resolve(__dirname, 'vendor')
 		}
 	},

@@ -1,155 +1,119 @@
-GService.signIn = () => gapi.auth2.getAuthInstance().signIn()
-GService.signOut = () => gapi.auth2.getAuthInstance().signOut()
+const gapi = require('./gapi')
 
-GService.connect = () => new Promise((resolve, reject) => {
-	if (!gapi.auth2.getAuthInstance().isSignedIn.get())
-		return reject('signed-out')
-
-	resolve(gapi.client.drive.files.list({
-		q: `name = "${GService.DB_FILENAME}" and trashed = false`
-	})
-		.then(({ result: { files: [ dbFile ] } }) => dbFile
-			? GService._.initDBFile(dbFile.id)
-			: GService._.createDBFile()
-		)
-	)
-})
-
-
-GService.on = (event, cb) => {
-	const listeners = GService.$.listeners[event]
-
-	if (listeners)
-		listeners.push(cb)
-}
-
-
-GService.addNode = (id, pid, type, data) => GService._.ifConnected(() =>
-	gapi.client.sheets.spreadsheets.values.append({
-		spreadsheetId: GService.$.dbFileId,
-		range: 'nodes!A:A',
-		valueInputOption: 'USER_ENTERED',
-		insertDataOption: 'INSERT_ROWS',
-	}, {
-		values: [ [ id, pid, '=JOIN(",",FILTER(ROW(A:A),B:B=INDEX(A:A,ROW())))', type, ...data ] ]
-	})
-)
-
-
-GService.addNodeRoot = (id, type, data) =>
-	GService.addNode(id, GService.ROOT_NODE_ID, type, data)
-
-
-GService.getNodes = (indexes, full) => GService._.ifConnected(() =>
-	gapi.client.sheets.spreadsheets.values.batchGet({
-		spreadsheetId: GService.$.dbFileId,
-		ranges: indexes.map(index => full
-			? `nodes!${index}:${index}`
-			: `nodes!A${index}:D${index}`
-		)
-	})
-		.then(({ result }) => result.valueRanges.map(
-			({ values: [ [ id, pid, children, type, ...data ] ] }, i) => ({
-				id,
-				pid,
-				index: indexes[i],
-				childIndexes: children.startsWith('#') ? [] : children.split(','),
-				type,
-				data
+module.exports = {
+	connect () {
+		return new Promise((resolve, reject) => gapi.load('client:auth2', () =>
+			resolve(gapi.client.init({
+				clientId: this.CLIENT_ID,
+				discoveryDocs: this.DISCOVERY_DOCS,
+				scope: this.AUTH_SCOPES.join(' ')
 			})
+				.then(() => {
+					const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn
+
+					this.on('signIn', () => gapi.client.drive.files.list({
+						q: `name = "${this.DB_FILENAME}" and trashed = false`
+					})
+						.then(({ result: { files: [ dbFile ] } }) => dbFile
+							? this._initDBFile(dbFile.id)
+							: this._createDBFile()
+						)
+					)
+
+					isSignedIn.listen(this._onSignInStatusChange(isSignedIn.get()))
+				})
+			)
 		))
-)
+	},
 
+	signIn () {
+		return gapi.auth2.getAuthInstance().signIn()
+	},
 
-GService.addNodeIndex = (parentIndex, id, pid, type, data) => GService.addNode(id, pid, type, data)
-	.then(() => GService.getNodes([ parentIndex ]))
-	.then(([ parent ]) => GService.getNodes(parent.childIndexes))
-	.then(nodes => nodes.find(node => node.id === id).index)
+	signOut () {
+		return gapi.auth2.getAuthInstance().signOut()
+	},
 
+	on (event, cb) {
+		const listeners = this.$.listeners[event]
 
-GService.addNodeRootIndex = (id, type, data) =>
-	GService.addNodeIndex(1, id, GService.ROOT_NODE_ID, type, data)
+		if (listeners)
+			listeners.push(cb)
+	},
 
+	addNode (id, pid, type, data) {
+		return this._ifConnected(() =>
+			gapi.client.sheets.spreadsheets.values.append({
+				spreadsheetId: this.$.dbFileId,
+				range: 'nodes!A:A',
+				valueInputOption: 'USER_ENTERED',
+				insertDataOption: 'INSERT_ROWS',
+			}, {
+				values: [ [ id, pid, '=JOIN(",",FILTER(ROW(A:A),B:B=INDEX(A:A,ROW())))', type, ...data ] ]
+			})
+		)
+	},
 
-GService.updateNode = (index, pid, data) => GService._.ifConnected(() => Promise.all([
-	pid && gapi.client.sheets.spreadsheets.values.update({
-		spreadsheetId: GService.$.dbFileId,
-		range: `nodes!B${index}`,
-		valueInputOption: 'USER_ENTERED'
-	}, {
-		values: [ [ pid ] ]
-	}),
-	data && gapi.client.sheets.spreadsheets.values.update({
-		spreadsheetId: GService.$.dbFileId,
-		range: `nodes!E${index}`,
-		valueInputOption: 'USER_ENTERED'
-	}, {
-		values: [ data ]
-	})
-]))
+	addNodeRoot (id, type, data) {
+		this.addNode(id, this.ROOT_NODE_ID, type, data)
+	},
 
-
-/*
- * The methods below does not seem to be needed anymore - to be removed at some point
- */
-
-GService.addRow = (table, row) => new Promise((resolve, reject) => {
-	if (!GService.$.dbFileId)
-		return reject('not-connected')
-
-	gapi.client.sheets.spreadsheets.values.append({
-		spreadsheetId: GService.$.dbFileId,
-		range: table,
-		valueInputOption: 'RAW',
-		insertDataOption: 'INSERT_ROWS',
-		includeValuesInResponse: true
-	}, {
-		values: [ row ]
-	})
-		.then(({ result: { updates: { updatedData: { range } } } }) => (console.log('RANGE', range),
-			resolve(GService._.a1parse(range).lastRow + 1)
+	getNodes (indexes, full) {
+		return this._ifConnected(() => new Promise(resolve =>
+			resolve(indexes.length
+				? gapi.client.sheets.spreadsheets.values.batchGet({
+					spreadsheetId: this.$.dbFileId,
+					ranges: indexes.map(index => full
+						? `nodes!${index}:${index}`
+						: `nodes!A${index}:D${index}`
+					)
+				})
+					.then(({ result }) => result.valueRanges.map(
+						({ values: [ [ id, pid, children, type, ...data ] ] }, i) => ({
+							id,
+							pid,
+							index: indexes[i],
+							childIndexes: children.startsWith('#') ? [] : children.split(','),
+							type,
+							data
+						})
+					))
+				: []
+			)
 		))
-		.catch(reject)
-})
+	},
 
+	getRootNode () {
+		return this.getNodes([ 1 ]).then(([ root ]) => root)
+	},
 
-GService.getAll = table => new Promise((resolve, reject) => {
-	if (!GService.$.dbFileId)
-		return reject('not-connected')
+	addNodeIndex (parentIndex, id, pid, type, data) {
+		return this.addNode(id, pid, type, data)
+			.then(() => this.getNodes([ parentIndex ]))
+			.then(([ parent ]) => this.getNodes(parent.childIndexes))
+			.then(nodes => nodes.find(node => node.id === id).index)
+	},
 
-	gapi.client.sheets.spreadsheets.values.get({
-		spreadsheetId: GService.$.dbFileId,
-		range: table
-	})
-		.then(({ result: { values } }) => resolve(values))
-		.catch(reject)
-})
+	addNodeRootIndex (id, type, data) {
+		return this.addNodeIndex(1, id, this.ROOT_NODE_ID, type, data)
+	},
 
-
-GService.getRow = (table, index) => new Promise((resolve, reject) => {
-	if (!GService.$.dbFileId)
-		return reject('not-connected')
-
-	gapi.client.sheets.spreadsheets.values.get({
-		spreadsheetId: GService.$.dbFileId,
-		range: `${table}!${index}:${index}`
-	})
-		.then(({ result: { values: [ row ] } }) => resolve(row))
-		.catch(reject)
-})
-
-
-GService.updateRow = (table, index, row) => new Promise((resolve, reject) => {
-	if (!GService.$.dbFileId)
-		return reject('not-connected')
-
-	gapi.client.sheets.spreadsheets.values.update({
-		spreadsheetId: GService.$.dbFileId,
-		range: `${table}!${index}:${index}`,
-		valueInputOption: 'RAW'
-	}, {
-		values: [ row ]
-	})
-		.then(resolve)
-		.catch(reject)
-})
+	updateNode (index, pid, data) {
+		return this._ifConnected(() => Promise.all([
+			pid && gapi.client.sheets.spreadsheets.values.update({
+				spreadsheetId: this.$.dbFileId,
+				range: `nodes!B${index}`,
+				valueInputOption: 'USER_ENTERED'
+			}, {
+				values: [ [ pid ] ]
+			}),
+			data && gapi.client.sheets.spreadsheets.values.update({
+				spreadsheetId: this.$.dbFileId,
+				range: `nodes!E${index}`,
+				valueInputOption: 'USER_ENTERED'
+			}, {
+				values: [ data ]
+			})
+		]))
+	}
+}
