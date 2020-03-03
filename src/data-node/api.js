@@ -41,7 +41,7 @@ module.exports = DataNode => {
 		}
 
 		return Promise.all([
-			GService.updateNode(this.index, null, []),
+			GService.updateNode(this.index, null, this.toArray()),
 			recursive && this.saveChildren(true)
 		])
 	}
