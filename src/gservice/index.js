@@ -1,5 +1,5 @@
 module.exports = {
-	CLIENT_ID: '217212189873-oh54f7sr263sjjsnegktkuo3hidjod4g.apps.googleusercontent.com',
+	CLIENT_ID: '217212189873-d4qlcpnbdhlt0h8t18c4k5d39hs3amco.apps.googleusercontent.com',
 	DISCOVERY_DOCS: [,
 		'https://people.googleapis.com/$discovery/rest?version=v1',
 		'https://sheets.googleapis.com/$discovery/rest?version=v4',
@@ -14,6 +14,7 @@ module.exports = {
 	$: {
 		dbFileId: null,
 		listeners: {
+			init: [],
 			signIn: [],
 			signOut: []
 		}

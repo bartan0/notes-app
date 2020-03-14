@@ -1,4 +1,6 @@
 const gapi = require('./gapi')
+const { PromiseResolve } = require('local/lib')
+
 
 module.exports = {
 	connect () {
@@ -18,6 +20,7 @@ module.exports = {
 							? this._initDBFile(dbFile.id)
 							: this._createDBFile()
 						)
+						.then(() => this._emit('init'))
 					)
 
 					isSignedIn.listen(this._onSignInStatusChange(isSignedIn.get()))
@@ -27,7 +30,12 @@ module.exports = {
 	},
 
 	signIn () {
-		return gapi.auth2.getAuthInstance().signIn()
+		const auth = gapi.auth2.getAuthInstance()
+
+		if (!auth.isSignedIn.get())
+			return auth.signIn()
+
+		return PromiseResolve
 	},
 
 	signOut () {
