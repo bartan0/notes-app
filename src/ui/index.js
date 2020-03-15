@@ -1,3 +1,4 @@
 module.exports = {
-	DocumentRenderer: require('./document')
+	DocumentRenderer: require('./document'),
+	ChecklistRenderer: require('./checklist')
 }
