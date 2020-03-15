@@ -1,48 +1,48 @@
 const React = require('react')
-const { Mode } = require('local/containers').Document
-
-const { useRef } = React
-
 
 const Document = ({
+	Mode,
 	mode,
-	switchMode,
 	content,
-	update,
-	load
+	setContent,
+	toggleMode
 }) => {
-	const editorRef = useRef()
-	const _update = () => update(editorRef.current.value)
+	const editor = React.useRef()
 
-	return (
-		<div>
-			<div>
-				<button onClick={() => {
-					if (mode === Mode.EDIT)
-						_update()
-					switchMode()
-				}}>
-					{{
-						[Mode.EDIT]: 'PREVIEW',
-						[Mode.VIEW]: 'EDIT'
-					}[mode]}
-				</button>
-			</div>
+	switch (mode) {
 
-			{{
-				[Mode.EDIT]:
+		case Mode.EDIT:
+			return (
+				<div>
+					<div>
+						<button onClick={() => {
+							setContent(editor.current.value)
+							toggleMode()
+						}}>
+							Accept
+						</button>
+					</div>
+
 					<div>
 						<textarea
-							ref={editorRef}
+							ref={editor}
 							defaultValue={content}
 						/>
 					</div>
-				,
-				[Mode.VIEW]: content
-			}[mode]}
-		</div>
-	)
-}
+				</div>
+			)
 
+		case Mode.VIEW:
+			return (
+				<div>
+					<div>
+						<button onClick={toggleMode}>Edit</button>
+					</div>
+
+					{content}
+				</div>
+			)
+	}
+}
 
 module.exports = Document
