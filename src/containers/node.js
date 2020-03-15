@@ -6,9 +6,11 @@ const GService = require('local/gservice')
 const Node = ({
 	isRoot,
 	index,
-	_type,
+	type: _type,
+	order: _order,
 	parentId,
 	parentIndex,
+	data: _data,
 	autoLoad,
 	saveCounter,
 	render,
@@ -16,11 +18,12 @@ const Node = ({
 	onIndex,
 	onRemove
 }) => {
-	const [ { id, type, children, data, dirty }, setState ] = useState({
+	const [ { id, type, order, children, data, dirty }, setState ] = useState({
 		id: isRoot ? null : UUID(),
 		type: _type || null,
+		order: _order || 0,
 		children: [],
-		data: [],
+		data: _data || [],
 		dirty: !index
 	})
 	const counter = useRef()
@@ -40,9 +43,10 @@ const Node = ({
 				}))
 			}))
 		: index && GService.getNodes([ index ], true)
-			.then(([ { id, type, childIndexes, data } ]) => setState({
+			.then(([ { id, type, order, childIndexes, data } ]) => setState({
 				id,
 				type,
+				order,
 				children: childIndexes.map(index => ({
 					key: counter.current(),
 					index,
@@ -55,8 +59,7 @@ const Node = ({
 	const save = recursive => {
 		if (index) {
 			if (dirty) {
-				console.log('save', data)
-				GService.updateNode(index, null, data)
+				GService.updateNode(index, null, data, order)
 				setState(s => ({ ...s, dirty: false }))
 			}
 
@@ -65,7 +68,7 @@ const Node = ({
 
 		} else {
 			const res = parentIndex
-				? GService.addNodeIndex(parentIndex, id, parentId, type, data)
+				? GService.addNodeIndex(parentIndex, id, parentId, type, data, order)
 				: !parentId
 					? GService.addNodeRootIndex(id, type, data)
 					: null
@@ -83,11 +86,12 @@ const Node = ({
 
 	const update = data => setState(s => ({ ...s, dirty: true, data }))
 
-	const append = type => setState(s =>
+	const append = (type, data) => setState(s =>
 		({ ...s, children: s.children.concat({
 			key: counter.current(),
 			index: null,
 			type,
+			data,
 			saveCounter: 0
 		}) })
 	)
@@ -100,13 +104,15 @@ const Node = ({
 		({ ...s, children: s.children.map(c => c.key === key ? { ...c, index } : c) })
 	)
 
-	const subnodes = (render, autoLoad) => children.map(({ key, index: _index, type, saveCounter }) =>
-		createElement(Node, {
+	const subnodes = (render, autoLoad) => children
+		.map(({ key, index: _index, type, data, saveCounter }) => createElement(Node, {
 			key,
 			index: _index,
-			_type: type,
+			type,
+			order: key,
 			parentId: id,
 			parentIndex: index,
+			data,
 			autoLoad,
 			saveCounter,
 			render,
@@ -134,24 +140,27 @@ const Node = ({
 			save(true)
 	}, [ saveCounter ])
 
-	return render(isRoot
-		? {
-			subnodes,
-			load,
-			append
-		} : {
-			id,
-			type,
-			data,
+	return render
+		? render(isRoot
+			? {
+				subnodes,
+				load,
+				append
+			} : {
+				id,
+				type,
+				order,
+				data,
 
-			subnodes,
-			load,
-			save,
-			update,
-			append,
-			remove: onRemove
-		}
-	)
+				subnodes,
+				load,
+				save,
+				update,
+				append,
+				remove: onRemove
+			}
+		)
+		: null
 }
 
 

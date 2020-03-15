@@ -49,21 +49,30 @@ module.exports = {
 			listeners.push(cb)
 	},
 
-	addNode (id, pid, type, data) {
+	addNode (id, pid, type, data, order) {
 		return this._ifConnected(() =>
 			gapi.client.sheets.spreadsheets.values.append({
 				spreadsheetId: this.$.dbFileId,
 				range: 'nodes!A:A',
 				valueInputOption: 'USER_ENTERED',
 				insertDataOption: 'INSERT_ROWS',
+
+				includeValuesInResponse: true
 			}, {
-				values: [ [ id, pid, '=JOIN(",",FILTER(ROW(A:A),B:B=INDEX(A:A,ROW())))', type, ...data ] ]
+				values: [ [
+					id,
+					pid,
+					this.FUNCTION_GET_CHILDINDEXES,
+					type,
+					order || 0,
+					...data
+				] ]
 			})
 		)
 	},
 
-	addNodeRoot (id, type, data) {
-		this.addNode(id, this.ROOT_NODE_ID, type, data)
+	addNodeRoot (id, type, data, order) {
+		return this.addNode(id, this.ROOT_NODE_ID, type, data, order)
 	},
 
 	getNodes (indexes, full) {
@@ -77,12 +86,13 @@ module.exports = {
 					)
 				})
 					.then(({ result }) => result.valueRanges.map(
-						({ values: [ [ id, pid, children, type, ...data ] ] }, i) => ({
+						({ values: [ [ id, pid, children, type, order, ...data ] ] }, i) => ({
 							id,
 							pid,
 							index: indexes[i],
 							childIndexes: children.startsWith('#') ? [] : children.split(','),
 							type,
+							order,
 							data
 						})
 					))
@@ -95,18 +105,18 @@ module.exports = {
 		return this.getNodes([ 1 ]).then(([ root ]) => root)
 	},
 
-	addNodeIndex (parentIndex, id, pid, type, data) {
-		return this.addNode(id, pid, type, data)
+	addNodeIndex (parentIndex, id, pid, type, data, order) {
+		return this.addNode(id, pid, type, data, order)
 			.then(() => this.getNodes([ parentIndex ]))
 			.then(([ parent ]) => this.getNodes(parent.childIndexes))
 			.then(nodes => nodes.find(node => node.id === id).index)
 	},
 
-	addNodeRootIndex (id, type, data) {
-		return this.addNodeIndex(1, id, this.ROOT_NODE_ID, type, data)
+	addNodeRootIndex (id, type, data, order) {
+		return this.addNodeIndex(1, id, this.ROOT_NODE_ID, type, data, order)
 	},
 
-	updateNode (index, pid, data) {
+	updateNode (index, pid, data, order) {
 		return this._ifConnected(() => Promise.all([
 			pid && gapi.client.sheets.spreadsheets.values.update({
 				spreadsheetId: this.$.dbFileId,
@@ -117,10 +127,10 @@ module.exports = {
 			}),
 			data && gapi.client.sheets.spreadsheets.values.update({
 				spreadsheetId: this.$.dbFileId,
-				range: `nodes!E${index}`,
+				range: `nodes!${order ? 'E' : 'F'}${index}`,
 				valueInputOption: 'USER_ENTERED'
 			}, {
-				values: [ data ]
+				values: order ? [ order, ...data ] : [ data ]
 			})
 		]))
 	}

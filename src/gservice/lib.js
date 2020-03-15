@@ -31,7 +31,7 @@ module.exports = {
 			values: [ [
 				this.ROOT_NODE_ID,
 				this.ROOT_NODE_PID,
-				'=JOIN(",",FILTER(ROW(A:A),B:B=INDEX(A:A,ROW())))',
+				this.FUNCTION_GET_CHILDINDEXES,
 				this.ROOT_NODE_TYPE
 			] ]
 		})
