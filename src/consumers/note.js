@@ -13,6 +13,7 @@ const Note = ({
 	subnodes,
 	update,
 	append,
+	save,
 	loadSubnodes
 }) => {
 	const [ name = '' ] = data
@@ -23,7 +24,8 @@ const Note = ({
 		name,
 		components: subnodes,
 		setName: name => update([ name ]),
-		append: type => append(type, NodeData[type])
+		append: type => append(type, NodeData[type]),
+		save: () => save(true)
 	})
 }
 

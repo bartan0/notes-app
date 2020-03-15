@@ -30,6 +30,7 @@ const Node = ({
 	type,
 	order,
 	dirty,
+	saveIndicator,
 	subnodesIndexes,
 	data,
 
@@ -57,6 +58,7 @@ const Node = ({
 			type,
 			order: key,
 			dirty: true,
+			saveIndicator: 0,
 			subnodesIndexes: [],
 			data
 		})
@@ -76,6 +78,10 @@ const Node = ({
 		nodes.map(n => n.key === key ? { ...n, dirty: false } : n)
 	)
 
+	const incSaveIndicators = () => setSubnodes(nodes =>
+		nodes.map(n => ({ ...n, saveIndicator: n.saveIndicator + 1 }))
+	)
+
 	const loadRootSubnodes = () => GService.getRootNode()
 		.then(({ childIndexes }) => GService.getNodes(childIndexes, true))
 		.then(nodes => setSubnodes(nodes.map(node => ({
@@ -87,23 +93,40 @@ const Node = ({
 		GService.getNodes(subnodesIndexes, true)
 			.then(nodes => setSubnodes(nodes.map(node => ({
 				...getProps(node),
-				key: counter.current()
+				key: counter.current(),
+				saveIndicator: 0
 			}))))
 
-	const save = () => {
-		if (!dirty)
-			return
+	const save = recursive => {
+		let res
 
-		if (index) {
-			GService.updateNode(index, parentId, data, order)
-			onClean()
-		} else if (isRoot(parentId))
-			GService.addNodeRootIndex(id, type, data, order)
-				.then(index => onIndex(index))
-		else if (parentIndex)
-			GService.addNodeIndex(parentIndex, id, parentId, type, data, order)
-				.then(index => onIndex(index))
+		if (dirty) {
+			if (index) {
+				GService.updateNode(index, null, data, order)
+				onClean()
+
+			} else if (isRoot(parentId))
+				res = GService.addNodeRootIndex(id, type, data, order)
+					.then(index => onIndex(index))
+
+			else if (parentIndex)
+				res = GService.addNodeIndex(parentIndex, id, parentId, type, data, order)
+					.then(index => onIndex(index))
+		}
+
+		if (recursive) {
+			if (res)
+				res.then(() => incSaveIndicators())
+			else
+				incSaveIndicators()
+		}
 	}
+
+
+	useEffect(() => {
+		if (saveIndicator)
+			save(true)
+	}, [ saveIndicator ])
 
 
 	const elements = subnodes.map(node => createElement(Node, {
