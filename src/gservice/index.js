@@ -7,8 +7,8 @@ module.exports = {
 	],
 	AUTH_SCOPES: [ 'profile', 'email', 'https://www.googleapis.com/auth/drive' ],
 	DB_FILENAME: '_database-test',
-	ROOT_NODE_ID: '_00000000000000000000000000000001',
-	ROOT_NODE_PID: '_00000000000000000000000000000000',
+	ROOT_NODE_ID: '_ROOT',
+	ROOT_NODE_PID: '_NONE',
 	ROOT_NODE_TYPE: '_ROOT',
 	FUNCTION_GET_CHILDINDEXES:
 		'=JOIN(",",INDEX(SORT(FILTER({ROW(E:E),E:E},B:B=INDEX(A:A,ROW())),2,1),0,1))',

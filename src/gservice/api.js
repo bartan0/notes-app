@@ -130,7 +130,7 @@ module.exports = {
 				range: `nodes!${order ? 'E' : 'F'}${index}`,
 				valueInputOption: 'USER_ENTERED'
 			}, {
-				values: order ? [ order, ...data ] : [ data ]
+				values: order ? [ [ order, ...data ] ] : [ data ]
 			})
 		]))
 	}
