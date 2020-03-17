@@ -11,7 +11,7 @@ module.exports = {
 
 	output: {
 		path: resolve(__dirname, 'build'),
-		filename: '[name]'
+		filename: 'static/[name]'
 	},
 
 	resolve: {
