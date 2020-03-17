@@ -3,7 +3,7 @@ const { PromiseResolve } = require('local/lib')
 
 
 module.exports = {
-	connect () {
+	connect (signOut = false) {
 		return new Promise((resolve, reject) => gapi.load('client:auth2', () =>
 			resolve(gapi.client.init({
 				clientId: this.CLIENT_ID,
@@ -11,17 +11,11 @@ module.exports = {
 				scope: this.AUTH_SCOPES.join(' ')
 			})
 				.then(() => {
-					const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn
+					const auth = gapi.auth2.getAuthInstance()
+					const isSignedIn = auth.isSignedIn
 
-					this.on('signIn', () => gapi.client.drive.files.list({
-						q: `name = "${this.DB_FILENAME}" and trashed = false`
-					})
-						.then(({ result: { files: [ dbFile ] } }) => dbFile
-							? this._initDBFile(dbFile.id)
-							: this._createDBFile()
-						)
-						.then(() => this._emit('init'))
-					)
+					if (signOut)
+						return auth.signOut()
 
 					isSignedIn.listen(this._onSignInStatusChange(isSignedIn.get()))
 				})
@@ -39,7 +33,9 @@ module.exports = {
 	},
 
 	signOut () {
-		return gapi.auth2.getAuthInstance().signOut()
+		return gapi.auth2
+			? gapi.auth2.getAuthInstance().signOut()
+			: this.connect(true)
 	},
 
 	on (event, cb) {

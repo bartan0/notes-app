@@ -1,6 +1,18 @@
 const gapi = require('./gapi')
 
 module.exports = {
+	_init () {
+		this.on('signIn', () => gapi.client.drive.files.list({
+			q: `name = "${this.DB_FILENAME}" and trashed = false`
+		})
+			.then(({ result: { files: [ dbFile ] } }) => dbFile
+				? this._initDBFile(dbFile.id)
+				: this._createDBFile()
+			)
+			.then(() => this._emit('init'))
+		)
+	},
+
 	_emit (event, ...args) {
 		this.$.listeners[event].forEach(f => f(...args))
 	},

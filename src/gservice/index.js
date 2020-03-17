@@ -1,4 +1,6 @@
-module.exports = {
+const gapi = require('./gapi')
+
+const GService = {
 	CLIENT_ID: '217212189873-d4qlcpnbdhlt0h8t18c4k5d39hs3amco.apps.googleusercontent.com',
 	DISCOVERY_DOCS: [,
 		'https://people.googleapis.com/$discovery/rest?version=v1',
@@ -25,3 +27,6 @@ module.exports = {
 	...require('./lib'),
 	...require('./api')
 }
+
+GService._init()
+module.exports = GService
