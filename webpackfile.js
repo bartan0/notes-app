@@ -27,36 +27,18 @@ module.exports = {
 			loader: 'babel-loader',
 			options: {
 				presets: [
+					'@babel/preset-react',
 					[ '@babel/preset-env', {
 						targets: '> 1%, not dead'
 					} ],
-					'@babel/preset-react'
 				],
 				plugins: [
 					'@babel/plugin-proposal-class-properties'
 				]
 			}
 		}, {
-			test: /\.html$/,
-			use: [
-				{
-					loader: 'file-loader',
-					options: { name: '[name].html' }
-				},
-				'extract-loader',
-				'html-loader'
-			]
-		}, {
-			test: /\.sass$/,
-			use: [
-				{
-					loader: 'file-loader',
-					options: { name: 'static/[name].css' }
-				},
-				'extract-loader',
-				'css-loader',
-				'sass-loader',
-			]
+			test: /\.(eot|png|svg|ttf|woff|woff2)$/,
+			use: 'file-loader?name=static/[name].[ext]'
 		}
 	] }
 }

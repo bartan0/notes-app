@@ -1,5 +1,6 @@
-require('local/index.html')
-require('local/index.sass')
+require('file-loader?name=index.html!extract-loader!html-loader!local/index.html')
+require('file-loader?name=static/main.css!extract-loader!css-loader!sass-loader!local/index.sass')
+require('file-loader?name=static/semantic.css!extract-loader!css-loader!semantic-ui-css/semantic.min.css')
 
 const React = require('react')
 const GContainer = require('local/gcontainer')
