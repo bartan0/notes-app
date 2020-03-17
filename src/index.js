@@ -1,26 +1,60 @@
 require('local/index.html')
 
 const React = require('react')
-const { render } = require('react-dom')
 const GContainer = require('local/gcontainer')
-const RootNode = require('local/node')
-const Consumer = require('local/consumers/root')
+const Router = require('local/router')
+const { render } = require('react-dom')
+const { BrowserRouter } = require('react-router-dom')
 
 
-const MainView = () =>
-	<RootNode consumer={Consumer}/>
+/*
+const App = () =>
+	<GContainer autoConnect
+		signedIn={() => <div>wait...</div>}
+
+		signedOut={({ signIn }) =>
+			<div><button onClick={() => signIn()}>SIGN IN</button></div>
+		}
+
+		ready={() =>
+		}
+
+		ready={() =>
+			<RootNode consumer={({
+				nodes,
+				append,
+				loadNodes
+			}) =>
+				<Router>
+					<Switch>
+						<Route exact path="/notes" render={() =>
+							<NotesView notes={nodes}/>
+						}/>
+
+						<Route exact path="/note/:slug" render={({
+							match: { params: { slug } }
+						}) =>
+							<NoteView slug={slug}/>
+						}/>
+
+						<Redirect to="/notes"/>
+					</Switch>
+				</Router>
+			}/>
+		}
+	/>
+*/
 
 
 const App = () =>
 	<GContainer
 		autoConnect
-		signedIn={() => <div>wait...</div>}
-		signedOut={({ signIn }) =>
-			<div><button onClick={() => signIn()}>SIGN IN</button></div>
+		render={gcontainer =>
+			<BrowserRouter>
+				<Router {...gcontainer}/>
+			</BrowserRouter>
 		}
-		ready={MainView}
 	/>
-
 
 render(
 	React.createElement(App),
