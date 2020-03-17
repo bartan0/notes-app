@@ -1,4 +1,5 @@
 require('local/index.html')
+require('local/index.sass')
 
 const React = require('react')
 const GContainer = require('local/gcontainer')

@@ -46,6 +46,17 @@ module.exports = {
 				'extract-loader',
 				'html-loader'
 			]
+		}, {
+			test: /\.sass$/,
+			use: [
+				{
+					loader: 'file-loader',
+					options: { name: 'static/[name].css' }
+				},
+				'extract-loader',
+				'css-loader',
+				'sass-loader',
+			]
 		}
 	] }
 }
