@@ -1,9 +1,10 @@
 const { resolve } = require('path')
-
+const HTMLPlugin = require('html-webpack-plugin')
+const CSSPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
 	entry: {
-		'main.js': './src/index.js'
+		main: './src/index.js'
 	},
 	context: resolve(__dirname),
 	target: 'web',
@@ -11,7 +12,7 @@ module.exports = {
 
 	output: {
 		path: resolve(__dirname, 'build'),
-		filename: 'static/[name]'
+		filename: '[name].js'
 	},
 
 	resolve: {
@@ -20,6 +21,11 @@ module.exports = {
 			'vendor': resolve(__dirname, 'vendor')
 		}
 	},
+
+	plugins: [
+		new HTMLPlugin({ template: 'src/index.ejs' }),
+		new CSSPlugin
+	],
 
 	module: { rules: [
 		{
@@ -37,8 +43,15 @@ module.exports = {
 				]
 			}
 		}, {
+			test: /\.(css|sass)$/,
+			use: [
+				CSSPlugin.loader,
+				'css-loader',
+				'sass-loader'
+			]
+		}, {
 			test: /\.(eot|png|svg|ttf|woff|woff2)$/,
-			use: 'file-loader?name=static/[name].[ext]'
+			use: 'file-loader'
 		}
 	] }
 }
