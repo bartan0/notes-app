@@ -1,25 +1,45 @@
 const React = require('react')
+const {
+	Button,
+	Divider,
+	Image,
+	Loader,
+	Segment
+} = require('semantic-ui-react')
+const ToplevelBox = require('local/ui/toplevel-box')
 
 const { useState } = React
 
 
 const SignIn = ({ forceLoading, signIn }) => {
 	const [ loading, setLoading ] = useState(false)
-
-	if (loading || forceLoading)
-		return 'LOADING...'
+	const showLoading = loading || forceLoading
 
 	return (
-		<div>
-			<button
-				onClick={() => {
-					setLoading(true)
-					signIn()
-				}}
+		<ToplevelBox>
+			<Segment compact raised
+				textAlign="center"
 			>
-				BIG GOOGLE BUTTON
-			</button>
-		</div>
+				<Image centered
+					size="large"
+					src="https://via.placeholder.com/800x600?text=LOGO"
+				/>
+				<Divider/>
+				{showLoading ?
+					<Loader active inline/>
+				:
+					<Button
+						icon="google"
+						content="Sign In with Google"
+						size="huge"
+						onClick={() => {
+							setLoading(true)
+							signIn()
+						}}
+					/>
+				}
+			</Segment>
+		</ToplevelBox>
 	)
 }
 

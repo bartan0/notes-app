@@ -40,7 +40,9 @@ const Router = ({
 			)}
 
 			<Route exact path="/sign-out" render={() =>
-				<SignOut signOut={signOut}/>
+				<SignOut signOut={signOut} redirect={() =>
+					<Redirect to="/"/>
+				}/>
 			}/>
 			{!ready && <Route path="/" render={() =>
 				<SignIn forceLoading={signedIn} signIn={signIn}/>
