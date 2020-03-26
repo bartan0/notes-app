@@ -1,8 +1,8 @@
-const uuid = require('uuid/v4')
+const uuid = require('uuid')
 const Markdown = require('markdown-it')
 
 module.exports = {
-	UUID: uuid,
+	UUID: uuid.v4,
 
 	PromiseResolve: (...args) => new Promise(r => r(...args)),
 
