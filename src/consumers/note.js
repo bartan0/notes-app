@@ -17,27 +17,27 @@ const Note = ({
 	loadSubnodes
 }) => {
 	const [ name = '' ] = data
-
 	const { params } = useRouteMatch([
 		'/notes',
 		'/note/:id'
 	])
 
-	if (!params.id)
-		return createElement(NoteSummary, {
+	useEffect(() => {
+		if (params.id === id)
+			loadSubnodes()
+	}, [ params.id ])
+
+	return params.id
+		? params.id === id
+			? createElement(FullNoteView, {
+				name,
+				components: subnodes
+			})
+			: null
+		: createElement(NoteSummary, {
 			id,
 			name
 		})
-
-	if (params.id !== id)
-		return null
-
-	useEffect(() => { loadSubnodes() }, [])
-
-	return createElement(FullNoteView, {
-		name,
-		components: subnodes
-	})
 }
 
 Note.subconsumers = subconsumers
