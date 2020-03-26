@@ -1,6 +1,6 @@
 const { createElement, useEffect } = require('react')
 const { useRouteMatch } = require('react-router')
-const { NodeType } = require('local/const')
+const { NodeType, NodeData } = require('local/const')
 const NoteSummary = require('local/ui/note-summary')
 const FullNoteView = require('local/ui/full-note-view')
 
@@ -13,8 +13,11 @@ const subconsumers = {
 const Note = ({
 	id,
 	data,
+	update,
 	subnodes,
-	loadSubnodes
+	loadSubnodes,
+	save,
+	append
 }) => {
 	const [ name = '' ] = data
 	const { params } = useRouteMatch([
@@ -31,7 +34,11 @@ const Note = ({
 		? params.id === id
 			? createElement(FullNoteView, {
 				name,
-				components: subnodes
+				setName: name => update([ name ]),
+				components: subnodes,
+				save: () => save(true),
+				addChecklist: () => append(NodeType.CHECKLIST, NodeData[NodeType.CHECKLIST]),
+				addDocument: () => append(NodeType.DOCUMENT, NodeData[NodeType.DOCUMENT])
 			})
 			: null
 		: createElement(NoteSummary, {

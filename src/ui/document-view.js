@@ -6,36 +6,57 @@ const {
 	TextArea
 } = require('semantic-ui-react')
 
+const { useRef } = React
+
 
 const DocumentView = ({
 	Mode,
 	mode,
 	content,
-	toggleMode
-}) =>
-	<Segment>
-		<Button.Group buttons={[
-			{
-				key: 'toggle-mode',
-				icon: {
-					[Mode.EDIT]: 'eye',
-					[Mode.VIEW]: 'pencil'
-				}
-					[mode],
-				onClick: toggleMode
-			}
-		]}/>
+	toggleMode,
+	setContent
+}) => {
+	const ref = useRef()
 
-		{mode === Mode.EDIT ?
-			<Form>
-				<TextArea
-					rows={15}
-					value={content}
-				/>
-			</Form>
-		:
-			content
-		}
-	</Segment>
+	return (
+		<Segment>
+			<Button.Group buttons={[
+				{
+					key: 'toggle-mode',
+					icon: {
+						[Mode.EDIT]: 'eye',
+						[Mode.VIEW]: 'pencil'
+					}
+						[mode],
+					onClick: () => {
+						if (mode === Mode.EDIT)
+							setContent(ref.current.value)
+						toggleMode()
+					}
+				}
+			]}/>
+
+			{mode === Mode.EDIT ?
+				<Form>
+					<TextArea
+						as={() =>
+							<textarea
+								ref={ref}
+								defaultValue={content}
+								style={{
+									fontFamily: 'monospace'
+								}}
+							/>
+						}
+						rows={15}
+						onBlur={() => setContent(ref.current.value)}
+					/>
+				</Form>
+			:
+				content
+			}
+		</Segment>
+	)
+}
 
 module.exports = DocumentView

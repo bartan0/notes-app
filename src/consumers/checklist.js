@@ -1,5 +1,5 @@
 const { createElement, useEffect } = require('react')
-const { NodeType } = require('local/const')
+const { NodeType, NodeData } = require('local/const')
 const ChecklistItem = require('./checklist-item')
 const ChecklistView = require('local/ui/checklist-view')
 
@@ -9,7 +9,9 @@ const subconsumers = { [NodeType.CHECKLIST_ITEM]: ChecklistItem }
 const Checklist = ({
 	data,
 	subnodes,
-	loadSubnodes
+	loadSubnodes,
+	update,
+	append
 }) => {
 	const [ content = '' ] = data
 
@@ -17,7 +19,9 @@ const Checklist = ({
 
 	return createElement(ChecklistView, {
 		content,
-		items: subnodes
+		items: subnodes,
+		setContent: content => update([ content ]),
+		addItem: () => append(NodeType.CHECKLIST_ITEM, NodeData[NodeType.CHECKLIST_ITEM])
 	})
 }
 

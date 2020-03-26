@@ -18,7 +18,8 @@ const Document = ({
 	const props = {
 		Mode,
 		mode,
-		toggleMode: () => setMode(mode => 1 - mode)
+		toggleMode: () => setMode(mode => 1 - mode),
+		setContent: content => update([ content ])
 	}
 
 	switch (mode) {
@@ -31,7 +32,6 @@ const Document = ({
 
 		case Mode.EDIT:
 			props.content = content
-			props.setContent = content => update([ content ])
 			break
 	}
 

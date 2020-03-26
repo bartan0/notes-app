@@ -48,7 +48,11 @@ const Node = ({
 	useEffect(() => initCounter(counter), [])
 
 
-	const append = (type, data) => setSubnodes(nodes => {
+	const append = (
+		type,
+		data,
+		{ autoSave } = {}
+	) => setSubnodes(nodes => {
 		const key = counter.current()
 
 		return nodes.concat({
@@ -58,7 +62,7 @@ const Node = ({
 			type,
 			order: key,
 			dirty: true,
-			saveIndicator: 0,
+			saveIndicator: autoSave ? 1 : 0,
 			subnodesIndexes: [],
 			data
 		})
