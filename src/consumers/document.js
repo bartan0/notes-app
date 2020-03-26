@@ -1,6 +1,6 @@
 const { createElement, useState } = require('react')
 const { markdown } = require('local/lib')
-const DocumentView = require('local/ui/document')
+const DocumentView = require('local/ui/document-view')
 
 const Mode = {
 	EDIT: 0,

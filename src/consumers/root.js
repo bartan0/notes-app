@@ -1,6 +1,5 @@
-const { createElement, useEffect } = require('react')
-const { NodeType, NodeData } = require('local/const')
-const NotesView = require('local/ui/notes-view')
+const { useEffect } = require('react')
+const { NodeType } = require('local/const')
 const Note = require('./note')
 
 const Root = ({
@@ -10,10 +9,7 @@ const Root = ({
 }) => {
 	useEffect(() => { loadNodes() }, [])
 
-	return createElement(NotesView, {
-		notes: nodes,
-		append: () => append(NodeType.NOTE, NodeData[NodeType.NOTE])
-	})
+	return nodes
 }
 
 Root.subconsumers = { [NodeType.NOTE]: Note }

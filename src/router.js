@@ -2,19 +2,15 @@ const React = require('react')
 const { Redirect, Route, Switch, useLocation } = require('react-router')
 const SignIn = require('local/ui/sign-in')
 const SignOut = require('local/ui/sign-out')
+const RootNode = require('local/node')
+const RootConsumer = require('local/consumers/root')
 
 const { useState } = React
 
-/* TEMP */
-const NotesView = () => <div>ALL NOTES</div>
-
-const SingleNoteView = ({ match: { params } }) =>
-	<div>Single Note #{params.id}</div>
-/* ==== */
 
 const APP_LOCATIONS = [
-	[ '/notes', NotesView ],
-	[ '/note/:id', SingleNoteView ]
+	'/notes',
+	'/note/:id'
 ]
 const LOCATION_DEFAULT = '/notes'
 
@@ -30,14 +26,14 @@ const Router = ({
 
 	return (
 		<Switch>
-			{ready && location !== originalLocation &&
+			{/*ready && location !== originalLocation &&
 				APP_LOCATIONS.find(([ path ]) => path === originalLocation.pathname) &&
 					<Redirect to={originalLocation}/>
-			}
+			*/}
 
-			{ready && APP_LOCATIONS.map(([ path, component ]) =>
-				<Route key={path} exact {...{ path, component }}/>
-			)}
+			{ready && <Route exact path={APP_LOCATIONS} render={() =>
+				<RootNode consumer={RootConsumer}/>
+			}/>}
 
 			<Route exact path="/sign-out" render={() =>
 				<SignOut signOut={signOut} redirect={() =>

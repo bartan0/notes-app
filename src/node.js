@@ -140,23 +140,25 @@ const Node = ({
 		onClean: () => setClean(node.key)
 	}))
 
-	return createElement(consumer, isRoot(id) ? {
-		append,
-		loadNodes: loadRootSubnodes,
-		nodes: elements
-	} : {
-		id,
-		type,
-		order,
-		data,
-		subnodes: elements,
+	return consumer
+		? createElement(consumer, isRoot(id) ? {
+			append,
+			loadNodes: loadRootSubnodes,
+			nodes: elements
+		} : {
+			id,
+			type,
+			order,
+			data,
+			subnodes: elements,
 
-		append,
-		loadSubnodes,
-		update: onUpdate,
-		save,
-		remove: onRemove
-	})
+			append,
+			loadSubnodes,
+			update: onUpdate,
+			save,
+			remove: onRemove
+		})
+		: null
 }
 
 module.exports = Node

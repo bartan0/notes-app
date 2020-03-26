@@ -1,17 +1,17 @@
 const React = require('react')
-const Label = require('local/ui/label')
+const {
+	Checkbox,
+	List
+} = require('semantic-ui-react')
 
 const ChecklistItem = ({
 	done,
-	content,
-	toggle,
-	setContent
+	content
 }) =>
-	<div>
-		<label>
-			<input type="checkbox" checked={done} onChange={toggle}/>
-			<Label value={content} onChange={setContent}/>
-		</label>
-	</div>
+	<List.Item>
+		<List.Content>
+			<Checkbox checked={done} label={content}/>
+		</List.Content>
+	</List.Item>
 
 module.exports = ChecklistItem
