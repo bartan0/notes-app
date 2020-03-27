@@ -6,6 +6,7 @@
 		"build-production": "webpack --mode production",
 		"build-watch": "webpack --mode development --watch",
 		"dev-start": "bash ./scripts/dev-start.sh",
+		"deploy": "node ./scripts/deploy",
 		"full-update": "node ./scripts/full-update | bash",
 		"serve": "node ./scripts/server.js"
 	},
