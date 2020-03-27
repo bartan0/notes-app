@@ -3,6 +3,7 @@
 	"version": "0.0.0",
 	"scripts": {
 		"build": "webpack --mode development",
+		"build-production": "webpack --mode production",
 		"build-watch": "webpack --mode development --watch",
 		"dev-start": "bash ./scripts/dev-start.sh",
 		"full-update": "node ./scripts/full-update | bash",

@@ -29,7 +29,9 @@ module.exports = async (
 
 		output: {
 			path: resolve(__dirname, 'build'),
-			filename: '[name].js'
+			filename: isProduction
+				? '[contenthash].js'
+				: '[name].js'
 		},
 
 		resolve: {
@@ -42,7 +44,10 @@ module.exports = async (
 		plugins: [
 			new DefinePlugin({ ...buildConfig.env }),
 			new HTMLPlugin({ template: 'src/index.ejs' }),
-			new CSSPlugin
+			new CSSPlugin({ filename: isProduction
+				? '[contenthash].css'
+				: '[name].css'
+			})
 		],
 
 		module: { rules: [
