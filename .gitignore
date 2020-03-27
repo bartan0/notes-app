@@ -1,5 +1,8 @@
 .*.swp
 
+config.dev.json
+config.prod.json
+
 /build
 /node_modules
 /vendor

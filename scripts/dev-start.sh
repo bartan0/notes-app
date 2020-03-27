@@ -1,4 +1,4 @@
-npm run build-watch &
 npm run serve &
 
-wait
+# This command may use stdin
+npm run build-watch
