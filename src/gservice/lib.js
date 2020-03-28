@@ -43,8 +43,12 @@ module.exports = {
 			values: [ [
 				this.ROOT_NODE_ID,
 				this.ROOT_NODE_PID,
-				this.FUNCTION_GET_CHILDINDEXES,
-				this.ROOT_NODE_TYPE
+				0, // Not removed, it's not a function because root may never be removed
+				0, // Order, root is only node with 0
+				this.FUNCTIONS.GET_CHILD_INDEXES,
+				this.ROOT_NODE_TYPE,
+				this.FUNCTIONS.GET_NODE_COUNTS,
+				this.FUNCTIONS.GET_REMOVED_INDEXES
 			] ]
 		})
 			.then(() => spreadsheetId)
