@@ -1,5 +1,4 @@
 const React = require('react')
-const { Loader } = require('semantic-ui-react')
 
 const { useEffect, useState } = React
 
@@ -14,7 +13,7 @@ const SignOut = ({ signOut, redirect }) => {
 	return done ?
 		redirect()
 	:
-		<Loader active/>
+		'Loading...'
 }
 
 module.exports = SignOut

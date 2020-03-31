@@ -1,4 +1,3 @@
-require('semantic-ui-css/semantic.min.css')
 require('local/main.sass')
 
 const React = require('react')
