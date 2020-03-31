@@ -29,8 +29,5 @@ module.exports = {
 					new Promise(r => r(initVal))
 				)
 			}
-		}),
-
-	exEvent: (item, method) => ({ target }) =>
-		item[method](target.value)
+		})
 }

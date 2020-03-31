@@ -1,6 +1,5 @@
 const React = require('react')
 const { useGService } = require('local/containers/gservice')
-const { exEvent } = require('local/lib')
 const SteplistItem = require('local/ui/steplist-element-item')
 
 
@@ -19,7 +18,10 @@ const Steplist = ({ nodePath }) => {
 		<div>
 			<div>
 				<button onClick={() => steplist.addStep()}>+ Step</button>
-				<input defaultValue={steplist.name} onBlur={exEvent(steplist, 'setName')}/>
+				<input
+					defaultValue={steplist.name}
+					onBlur={({ target: t }) => steplist.setName(t.value)}
+				/>
 			</div>
 
 			{steps.length ?
