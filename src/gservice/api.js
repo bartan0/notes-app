@@ -1,5 +1,5 @@
 const gapi = require('./gapi')
-const { PromiseResolve } = require('local/lib')
+const { PromiseResolve, UUID, csvSplit } = require('local/lib')
 
 const gvalues = () => gapi.client.sheets.spreadsheets.values
 
@@ -47,12 +47,29 @@ module.exports = {
 			listeners.push(cb)
 	},
 
+	setTransformers (ts) {
+		this.$.transformers = ts
+	},
+
+	setNodeMethods (methods) {
+		this.$.nodeMethods = methods
+	},
+
 
 	/* Nodes mutations
 	 * ---------------
 	 */
 
-	addNode (id, pid, type, data, order) {
+	addNode (parent, type) {
+		const node = {
+			index: null,
+			id: UUID(),
+			pid: parent.id,
+			order: 1, // TODO: Should be the last somehow, verify if order arg is needed
+			childIndexes: [],
+			type
+		}
+
 		return this._ifConnected(() =>
 			gapi.client.sheets.spreadsheets.values.append({
 				spreadsheetId: this.$.dbFileId,
@@ -61,41 +78,60 @@ module.exports = {
 				insertDataOption: 'INSERT_ROWS',
 			}, {
 				values: [ [
-					id,
-					pid,
+					node.id,
+					node.pid,
 					this.FUNCTIONS.NODE_IS_REMOVED,
-					1, // TODO: Should be the last somehow, verify if order arg is needed
+					node.order,
 					this.FUNCTIONS.GET_CHILD_INDEXES,
-					type,
-					...data
+					node.type,
+					...(this.$.transformers[node.type] || this._defaultTransformer)
+						.pack.call(node)
 				] ]
 			})
+				.then(() => Object.assign(node,
+					this.$.nodeMethods,
+					(this.$.transformers[node.type] || {}).methods
+				))
 		)
 	},
 
+	/* DISABLED FOR NOW
 	addNodeRoot (id, type, data, order) {
 		return this.addNode(id, this.ROOT_NODE_ID, type, data, order)
 	},
+	*/
 
-	addNodeIndex (parentIndex, id, pid, type, data, order) {
-		return this.addNode(id, pid, type, data, order)
-			.then(() => this.getNodes([ parentIndex ]))
-			.then(([ parent ]) => this.getNodes(parent.childIndexes))
-			.then(nodes => nodes.find(node => node.id === id).index)
+	addNodeIndex (parent, type) {
+		return this.addNode(parent, type)
+			.then(node => this.getNodes([ parent.index ])
+				.then(([ { childIndexes } ]) => this.getNodes(childIndexes))
+				.then(nodes => {
+					node.index = nodes.find(({ id }) => id === node.id).index
+
+					return node
+				})
+			)
 	},
 
+	/* DISABLED FOR NOW
 	addNodeRootIndex (id, type, data, order) {
 		return this.addNodeIndex(1, id, this.ROOT_NODE_ID, type, data, order)
 	},
+	*/
 
-	removeNode (index) {
-		return this._ifConnected(() => gvalues().update({
-			spreadsheetId: this.$.dbFileId,
-			range: `nodes!C${index}`,
-			valueInputOption: 'RAW'
-		}, {
-			values: [ [ { number_value: 1 } ] ]
-		}))
+	removeNode (node, parent) {
+		return this._ifConnected(() => {
+			parent.childIndexes = parent.childIndexes
+				.filter(({ id }) => id !== node.id)
+
+			return gvalues().update({
+				spreadsheetId: this.$.dbFileId,
+				range: `nodes!C${node.index}`,
+				valueInputOption: 'RAW'
+			}, {
+				values: [ [ 1 ] ]
+			})
+		})
 	},
 
 	reorderNodes (
@@ -105,20 +141,23 @@ module.exports = {
 		return this._ifConnected(() => gvalues().batchUpdate({
 			valueInputOption: 'RAW',
 			data: [
-				{ range: `nodes!D${i1}`, values: [ [ { number_value: o2 } ] ] },
-				{ range: `nodes!D${i2}`, values: [ [ { number_value: o1 } ] ] }
+				{ range: `nodes!D${i1}`, values: [ [ o2 ] ] },
+				{ range: `nodes!D${i2}`, values: [ [ o1 ] ] }
 			]
 		}))
 	},
 
-	updateNode (index, data) {
+	updateNode (node) {
 		return this._ifConnected(() => Promise.all([
 			gvalues().update({
 				spreadsheetId: this.$.dbFileId,
-				range: `nodes!G${index}`,
+				range: `nodes!G${node.index}`,
 				valueInputOption: 'RAW'
 			}, {
-				values: [ data.map(x => ({ string_value: x })) ]
+				values: [
+					(this.$.transformers[node.type] || this._defaultTransformer)
+						.pack.call(node)
+				]
 			})
 		]))
 	},
@@ -131,15 +170,18 @@ module.exports = {
 	getRootNode (withMeta) {
 		return this.getNodes([ 1 ], withMeta)
 			.then(([ { data, ...root } ]) => {
-				const [ removedCount, nodesCount ] = (data[0] || '').split(',')
+				const [ removedCount, nodesCount ] = csvSplit(data[0], Number)
 
-				return withMeta
-					? Object.assign(root, {
-						removedCount,
-						nodesCount,
-						removedIndexes: data[1].split(',').map(Number)
-					})
-					: root
+				return Object.assign(
+					withMeta
+						? Object.assign(root, {
+							removedCount,
+							nodesCount,
+							removedIndexes: csvSplit(data[1], Number)
+						})
+						: root,
+					this.$.nodeMethods
+				)
 			})
 	},
 
@@ -154,17 +196,27 @@ module.exports = {
 					)
 				})
 					.then(({ result }) => result.valueRanges.map(
-						({ values }, i) => ({
-							index: indexes[i],
-							id: values[0],
-							pid: values[1],
-							// Skip isDeleted: values[2] as the whole idea
-							// is to filter-out removed nodes at DB level
-							order: values[3],
-							childIndexes: values[4].split(',').map(Number),
-							type: values[5],
-							data: values.slice(6)
-						})
+						({ values: [ data ] }, i) => {
+							const node = {
+								index: indexes[i],
+								id: data[0],
+								pid: data[1],
+								// Skip isDeleted: data[2] as the whole idea
+								// is to filter-out removed nodes at DB level
+								order: data[3],
+								childIndexes: csvSplit(data[4], Number),
+								type: data[5]
+							}
+							const transformer = this.$.transformers[node.type]
+								|| this._defaultTransformer
+
+							transformer.unpack.call(node, data.slice(6))
+
+							return Object.assign(node,
+								this.$.nodeMethods,
+								(this.$.transformers[node.type] || {}).methods
+							)
+						}
 					))
 				: []
 			)

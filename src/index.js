@@ -2,15 +2,17 @@ require('semantic-ui-css/semantic.min.css')
 require('local/main.sass')
 
 const React = require('react')
-const GContainer = require('local/gcontainer')
+const GServiceContainer = require('local/containers/gservice')
 const Router = require('local/router')
+const transformers = require('local/transformers')
 const { render } = require('react-dom')
-const { BrowserRouter, Link, Switch, Route } = require('react-router-dom')
+const { BrowserRouter } = require('react-router-dom')
 
 
 const App = () =>
-	<GContainer
+	<GServiceContainer
 		autoConnect
+		transformers={transformers}
 		render={gcontainer =>
 			<BrowserRouter>
 				<Router {...gcontainer}/>

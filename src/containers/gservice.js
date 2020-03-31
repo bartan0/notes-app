@@ -29,6 +29,7 @@ const GServiceContainer = ({
 		cache: new Cache
 	}))
 	const setStatus = status => setContext(ctx => ({ ...ctx, status }))
+	const { cache } = context
 
 	useEffect(() => {
 		GService.on('signIn', () => setStatus(Status.SIGNED_IN))
@@ -36,6 +37,49 @@ const GServiceContainer = ({
 		GService.on('init', () => setStatus(Status.READY))
 
 		GService.setTransformers(transformers)
+		GService.setNodeMethods({
+			update () {
+				GService.updateNode(this)
+					.then(() => {
+						cache.ping(this.id)
+						cache.ping(this.pid)
+					})
+			},
+
+			append (type) {
+				GService.addNodeIndex(this, type)
+					.then(node => {
+						const nodeInfo = cache.get(this.id)
+
+						cache.set(node.id, {
+							node,
+							status: NodeStatus.OK
+						})
+						cache.set(this.id, {
+							...nodeInfo,
+							children: (nodeInfo.children || []).concat(node)
+						})
+					})
+			},
+
+			remove () {
+				const {
+					node: parent,
+					children,
+					...rest
+				} = cache.get(this.pid)
+
+				GService.removeNode(this, parent)
+					.then(() => {
+						cache.set(parent.id, {
+							node: parent,
+							children: children.filter(({ id }) => id !== this.id),
+							...rest
+						})
+						cache.delete(this.id)
+					})
+			}
+		})
 
 		if (autoConnect)
 			GService.connect()
@@ -52,125 +96,119 @@ const GServiceContainer = ({
 }
 
 
-const useGService = path => {
-	const ids = ('ROOT' + path).split('/').reverse()
-	const childrenTypes = ids[0] === '*'
-		? []
-		: ids[0][0] === ':'
-			? ids[0].slice(1).split(',')
-			: null
-	const defaultResult = [ childrenTypes ? [] : null, NodeStatus.PENDING ]
-
+const useGService = (path, filter) => {
 	const { status, cache } = useContext(Context)
-	const [ { res, resStatus }, setRes ] = useState(() => ({
-		res: childrenTypes ? [] : null,
-		resStatus: NodeStatus.PENDING
-	}))
+	const [ _, _onCache ] = useState(0)
+	const onCache = () => _onCache(i => i + 1)
 
-	const callback = childrenTypes
-		? ({ children }) => setRes({
-			res: children || [],
-			resStatus: children
-				? NodeStatus.OK
-				: NodeStatus.PENDING
-		})
-		: ({ node, status }) => setRes({ res: node, resStatus: status })
+	const ids = (path || '').split('/').slice(1)
+	const isSingleNode = ids[ids.length - 1] !== ''
+	const defaultResult = isSingleNode
+		? [ null, NodeStatus.PENDING ]
+		: [ [], NodeStatus.PENDING, null, NodeStatus.PENDING ]
 
 
 	useEffect(() => {
-		const id = childrenTypes ? ids[1] : ids[0]
+		const id = ids[ids.length - 2 + isSingleNode] || 'ROOT'
 
-		cache.subscribe(id, callback)
+		cache.subscribe(id, onCache)
 
-		return () => { cache.unsubscribe(id, callback) }
+		return () => { cache.unsubscribe(id, onCache) }
 	}, [])
-
-	if (resStatus === NodeStatus.OK)
-		return [ res, resStatus ]
 
 	if (status !== Status.READY)
 		return defaultResult
 
-	const nodeInfo = cache.get(childrenTypes ? '*' + ids[1] : ids[0])
 
-	if (nodeInfo && nodeInfo.status === NodeStatus.PENDING)
+	const rootInfo = cache.get('ROOT')
+
+	if (!rootInfo) {
+		cache.set('ROOT', { status: NodeStatus.PENDING })
+		GService.getRootNode()
+			.then(node => cache.set('ROOT', {
+				node,
+				status: NodeStatus.OK
+			}))
+			.then(() => ids.length + isSingleNode - 1 && onCache())
+
 		return defaultResult
+	}
+
+	if (rootInfo.status === NodeStatus.PENDING) {
+		cache.once('ROOT', onCache)
+
+		return defaultResult
+	}
 
 
-	const queue = createCBQueue()
+	let parentNodeInfo = rootInfo
 
 	for (const id of ids) {
+		if (!id)
+			continue
+
 		const nodeInfo = cache.get(id)
 
-		if (nodeInfo) {
-			if (id === ids[0])
-				callback(nodeInfo)
-			else
-				queue.run(nodeInfo)
-					.catch(err => console.error(err))
-
-			return defaultResult
-		}
-
-		if (id === ids[0] && childrenTypes)
-			cache.set('*' + ids[1], {
-				status: NodeStatus.PENDING
-			})
-		else
-			cache.set(id, {
-				node: null,
-				children: null,
-				status: NodeStatus.PENDING
-			})
-
-		if (id === 'ROOT') {
-			queue.unshift(() => GService.getRootNode()
-				.then(root => cache.set(id, {
-					node: root,
-					children: null,
-					status: NodeStatus.OK
-				}))
-			)
-			queue.run()
-				.catch(err => console.error(err))
-
-			return defaultResult
-		}
-
-		queue.unshift(nodeInfo => nodeInfo
-			&& nodeInfo.status === NodeStatus.OK
-			&& GService.getNodes(nodeInfo.node.childIndexes, true)
+		if (!nodeInfo) {
+			cache.set(id, { status: NodeStatus.PENDING })
+			GService.getNodes(parentNodeInfo.node.childIndexes, true)
 				.then(nodes => {
-					cache.set(nodeInfo.node.id, {
-						...nodeInfo,
-						children: nodes
-					})
 					nodes.forEach(node => cache.set(node.id, {
 						node,
-						children: null,
 						status: NodeStatus.OK
 					}))
-
-					if (id === ids[0] && childrenTypes)
-						cache.set('*' + ids[1], {
-							status: NodeStatus.OK
-						})
-
-					else {
-						const res = cache.get(id)
-
-						if (res.status !== NodeStatus.OK)
-							return cache.set(id, {
-								node: null,
-								children: null,
-								status: NodeStatus.NOT_FOUND
-							})
-
-						return res
-					}
+					cache.set(parentNodeInfo.node.id, {
+						...parentNodeInfo,
+						children: nodes
+					})
 				})
-		)
+				.then(() => id === ids[ids.length - 2 + isSingleNode] || onCache())
+
+			return defaultResult
+		}
+
+		if (nodeInfo.status === NodeStatus.PENDING) {
+			cache.once(id, onCache)
+
+			return defaultResult
+		}
+
+		parentNodeInfo = nodeInfo
 	}
+
+	if (isSingleNode)
+		return [ parentNodeInfo.node, parentNodeInfo.status ]
+
+
+	if (!parentNodeInfo.children) {
+		cache.set(parentNodeInfo.node.id, {
+			...parentNodeInfo,
+			children: []
+		})
+		GService.getNodes(parentNodeInfo.node.childIndexes, true)
+			.then(nodes => {
+				nodes.forEach(node => cache.set(node.id, {
+					node,
+					status: NodeStatus.OK
+				}))
+				cache.set(parentNodeInfo.node.id, {
+					...parentNodeInfo,
+					children: nodes
+				})
+			})
+			.then(onCache)
+
+		return defaultResult
+	}
+
+	return [
+		filter
+			? parentNodeInfo.children.filter(filter)
+			: parentNodeInfo.children,
+		NodeStatus.OK,
+		parentNodeInfo.node,
+		NodeStatus.OK
+	]
 }
 
 module.exports = Object.assign(GServiceContainer, {

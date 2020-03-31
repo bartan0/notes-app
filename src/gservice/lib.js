@@ -1,6 +1,15 @@
 const gapi = require('./gapi')
 
 module.exports = {
+	_defaultTransformer: {
+		pack () {
+			return this.data || []
+		},
+		unpack (data) {
+			this.data = data
+		}
+	},
+
 	_init () {
 		this.on('signIn', () => gapi.client.drive.files.list({
 			q: `name = "${this.DB_FILENAME}" and trashed = false`

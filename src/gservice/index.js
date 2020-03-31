@@ -27,7 +27,9 @@ const GService = Object.assign({
 			init: [],
 			signIn: [],
 			signOut: []
-		}
+		},
+		transformers: {},
+		nodeMethods: {}
 	},
 },
 	require('./lib'),

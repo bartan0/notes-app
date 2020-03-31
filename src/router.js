@@ -2,17 +2,10 @@ const React = require('react')
 const { Redirect, Route, Switch, useLocation } = require('react-router')
 const SignIn = require('local/ui/sign-in')
 const SignOut = require('local/ui/sign-out')
-const RootNode = require('local/node')
-const RootConsumer = require('local/consumers/root')
+const Dashboard = require('local/ui/dashboard')
+const NoteView = require('local/ui/note')
 
 const { useState } = React
-
-
-const APP_LOCATIONS = [
-	'/notes',
-	'/note/:id'
-]
-const LOCATION_DEFAULT = '/notes'
 
 
 const Router = ({
@@ -31,9 +24,14 @@ const Router = ({
 					<Redirect to={originalLocation}/>
 			*/}
 
-			{ready && <Route exact path={APP_LOCATIONS} render={() =>
-				<RootNode consumer={RootConsumer}/>
-			}/>}
+			{ready && [
+				<Route exact key={1} path="/" render={() =>
+					<Dashboard/>
+				}/>,
+				<Route exact key={2} path="/note/:id" render={({ match: { params } }) =>
+					<NoteView nodePath={`/${params.id}`}/>
+				}/>
+			]}
 
 			<Route exact path="/sign-out" render={() =>
 				<SignOut signOut={signOut} redirect={() =>
@@ -44,7 +42,7 @@ const Router = ({
 				<SignIn forceLoading={signedIn} signIn={signIn}/>
 			}/>}
 
-			<Redirect to={LOCATION_DEFAULT}/>
+			<Redirect to="/"/>
 		</Switch>
 	)
 }
