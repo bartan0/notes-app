@@ -1,8 +1,10 @@
 const React = require('react')
 const ChecklistElement = require('local/ui/checklist-element')
 const DocumentElement = require('local/ui/document-element')
+const SteplistElement = require('local/ui/steplist-element')
 const { Link } = require('react-router-dom')
 const { useGService } = require('local/containers/gservice')
+
 
 const NoteView = ({ nodePath }) => {
 	const [
@@ -22,6 +24,7 @@ const NoteView = ({ nodePath }) => {
 			<div>
 				<button onClick={() => note.addChecklist()}>+ Checklist</button>
 				<button onClick={() => note.addDocument()}>+ Document</button>
+				<button onClick={() => note.addSteplist()}>+ Steplist</button>
 			</div>
 
 			<div>
@@ -30,7 +33,8 @@ const NoteView = ({ nodePath }) => {
 						const path = `${nodePath}/${elem.id}`
 						const Component = {
 							CHECKLIST: ChecklistElement,
-							DOCUMENT: DocumentElement
+							DOCUMENT: DocumentElement,
+							STEPLIST: SteplistElement
 						}
 							[elem.type]
 
