@@ -3,7 +3,10 @@ const { useGService } = require('local/containers/gservice')
 const SteplistItem = require('local/ui/steplist-element-item')
 
 
-const Steplist = ({ nodePath }) => {
+const Steplist = ({
+	nodePath,
+	showToolbar
+}) => {
 	const [
 		steps,
 		stepsStatus,
@@ -17,7 +20,12 @@ const Steplist = ({ nodePath }) => {
 	return steplist ?
 		<div>
 			<div>
-				<button onClick={() => steplist.addStep()}>+ Step</button>
+				{showToolbar &&
+					<div>
+						<button onClick={() => steplist.addStep()}>+ Step</button>
+					</div>
+				}
+
 				<input
 					defaultValue={steplist.name}
 					onBlur={({ target: t }) => steplist.setName(t.value)}
