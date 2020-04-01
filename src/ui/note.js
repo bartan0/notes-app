@@ -1,9 +1,18 @@
 const React = require('react')
+const FocusContainer = require('local/containers/focus')
 const ChecklistElement = require('local/ui/checklist-element')
 const DocumentElement = require('local/ui/document-element')
 const SteplistElement = require('local/ui/steplist-element')
 const { Link } = require('react-router-dom')
 const { useGService } = require('local/containers/gservice')
+
+const { useState } = React
+
+const typeToComponent = {
+	CHECKLIST: ChecklistElement,
+	DOCUMENT: DocumentElement,
+	STEPLIST: SteplistElement
+}
 
 
 const NoteView = ({ nodePath }) => {
@@ -13,6 +22,7 @@ const NoteView = ({ nodePath }) => {
 		note,
 		noteStatus
 	] = useGService(`${nodePath}/`)
+	const [ activeId, setActiveId ] = useState(null)
 
 	return note ?
 		<div>
@@ -31,21 +41,20 @@ const NoteView = ({ nodePath }) => {
 				{elements.length ?
 					elements.map(elem => {
 						const path = `${nodePath}/${elem.id}`
-						const Component = {
-							CHECKLIST: ChecklistElement,
-							DOCUMENT: DocumentElement,
-							STEPLIST: SteplistElement
-						}
-							[elem.type]
+						const Component = typeToComponent[elem.type]
 
 						return (
-							<div key={elem.id}>
-								<div>
-									<button onClick={() => elem.remove()}>X</button>
-								</div>
-
-								<Component nodePath={path}/>
-							</div>
+							<FocusContainer key={elem.id}
+								onFocus={() => setActiveId(elem.id)}
+								onBlur={() => setActiveId(null)}
+							>
+								{elem.id === activeId &&
+									<div>
+										<button onClick={() => elem.remove()}>X</button>
+									</div>
+								}
+								<Component nodePath={path} showToolbar={elem.id === activeId}/>
+							</FocusContainer>
 						)
 					})
 				:
