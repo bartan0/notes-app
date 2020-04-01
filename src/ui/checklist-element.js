@@ -1,4 +1,5 @@
 const React = require('react')
+const DynamicLabel = require('local/ui/dynamic-label')
 const ChecklistElementItem = require('local/ui/checklist-element-item')
 const { useGService } = require('local/containers/gservice')
 
@@ -23,7 +24,7 @@ const ChecklistElement = ({
 					</div>
 				}
 
-				<input defaultValue={checklist.name} onBlur={({ target: t }) => checklist.setName(t.value)}/>
+				<DynamicLabel content={checklist.name} onUpdate={name => checklist.setName(name)}/>
 			</div>
 
 			<div>

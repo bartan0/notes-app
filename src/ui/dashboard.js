@@ -1,5 +1,5 @@
 const React = require('react')
-const NotesList = require('local/ui/notes-list')
+const DynamicLabel = require('local/ui/dynamic-label')
 const { NodeStatus, useGService } = require('local/containers/gservice')
 const { Link } = require('react-router-dom')
 
@@ -31,7 +31,7 @@ const Dashboard = () => {
 			{notes.map(note =>
 				<div key={note.id}>
 					<button onClick={() => note.remove()}>X</button>
-					<input defaultValue={note.name} onBlur={({ target: t }) => note.setName(t.value)}/>
+					<DynamicLabel content={note.name} onUpdate={name => note.setName(name)}/>
 					<Link to={`/note/${note.id}`}>{'>>>'}</Link>
 				</div>
 			)}

@@ -1,4 +1,5 @@
 const React = require('react')
+const DynamicLabel = require('local/ui/dynamic-label')
 const { useGService } = require('local/containers/gservice')
 
 
@@ -8,8 +9,7 @@ const ChecklistElementItem = ({ nodePath }) => {
 	return item ?
 		<div>
 			<button onClick={() => item.remove()}>X</button>
-			<input type="checkbox" checked={item.done} onChange={() => item.toggle()}/>
-			<input defaultValue={item.content} onBlur={({ target: t }) => item.setContent(t.value)}/>
+			<DynamicLabel content={item.content} onUpdate={content => item.setContent(content)}/>
 		</div>
 	:
 		null

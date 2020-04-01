@@ -1,5 +1,6 @@
 const React = require('react')
 const FocusContainer = require('local/containers/focus')
+const DynamicLabel = require('local/ui/dynamic-label')
 const ChecklistElement = require('local/ui/checklist-element')
 const DocumentElement = require('local/ui/document-element')
 const SteplistElement = require('local/ui/steplist-element')
@@ -28,7 +29,7 @@ const NoteView = ({ nodePath }) => {
 		<div>
 			<div>
 				<Link to="/">{'<<<'}</Link>
-				<input defaultValue={note.name} onBlur={({ target: t }) => note.setName(t.value)}/>
+				<DynamicLabel content={note.name} onUpdate={name => note.setName(name)}/>
 			</div>
 
 			<div>

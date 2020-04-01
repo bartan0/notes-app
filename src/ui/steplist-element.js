@@ -1,4 +1,5 @@
 const React = require('react')
+const DynamicLabel = require('local/ui/dynamic-label')
 const { useGService } = require('local/containers/gservice')
 const SteplistItem = require('local/ui/steplist-element-item')
 
@@ -26,10 +27,7 @@ const Steplist = ({
 					</div>
 				}
 
-				<input
-					defaultValue={steplist.name}
-					onBlur={({ target: t }) => steplist.setName(t.value)}
-				/>
+				<DynamicLabel content={steplist.name} onUpdate={name => steplist.setName(name)}/>
 			</div>
 
 			{steps.length ?
