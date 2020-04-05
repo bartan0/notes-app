@@ -7,6 +7,7 @@ const GService = Object.assign({
 	],
 	AUTH_SCOPES: [ 'profile', 'email', 'https://www.googleapis.com/auth/drive' ],
 	DB_FILENAME: _GSERVICE_DB_FILENAME,
+	DB_LOCALE: 'en_US',
 	ROOT_NODE_ID: 'ROOT',
 	ROOT_NODE_PID: 'NONE',
 	ROOT_NODE_TYPE: 'ROOT',

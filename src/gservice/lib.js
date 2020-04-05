@@ -66,7 +66,10 @@ module.exports = {
 
 	_createDBFile () {
 		return gapi.client.sheets.spreadsheets.create({
-			properties: { title: this.DB_FILENAME },
+			properties: {
+				title: this.DB_FILENAME,
+				locale: this.DB_LOCALE
+			},
 			sheets: [ { properties: { title: 'nodes' } } ]
 		})
 			.then(({ result: { spreadsheetId: id } }) => this._insertRootNode(id))
