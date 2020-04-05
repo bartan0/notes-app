@@ -1,0 +1,36 @@
+.button-group
+	display: flex
+
+	&.horizontal
+		button:first-of-type
+			border-bottom-right-radius: 0
+			border-top-right-radius: 0
+
+		button:not(:first-of-type):not(:last-of-type)
+			border-left: none
+			border-right: none
+
+		button:last-of-type
+			border-bottom-left-radius: 0
+			border-top-left-radius: 0
+
+	&.vertical
+		flex-direction: column
+
+		button:first-of-type
+			border-bottom-left-radius: 0
+			border-bottom-right-radius: 0
+
+		button:not(:first-of-type):not(:last-of-type)
+			border-top: none
+			border-bottom: none
+
+		button:last-of-type
+			border-top-left-radius: 0
+			border-top-right-radius: 0
+
+	button
+		flex: 1
+
+	button:not(:first-of-type):not(:last-of-type)
+		border-radius: 0
