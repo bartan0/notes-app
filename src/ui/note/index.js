@@ -5,8 +5,6 @@ const FocusContainer = require('local/containers/focus')
 const DynamicLabel = require('local/ui/dynamic-label')
 const ButtonGroup = require('local/ui/button-group')
 const ElementToolbar = require('local/ui/element-toolbar')
-const ChecklistElement = require('local/ui/checklist-element')
-const SteplistElement = require('local/ui/steplist-element')
 const { Link } = require('react-router-dom')
 const { useGService } = require('local/gservice')
 const { bem } = require('local/lib')
@@ -14,9 +12,9 @@ const { bem } = require('local/lib')
 const { useState } = React
 
 const NoteElement = {
-	// CHECKLIST: ChecklistElement,
+	CHECKLIST: require('local/elements/checklist'),
 	DOCUMENT: require('local/elements/document'),
-	// STEPLIST: SteplistElement
+	STEPLIST: require('local/elements/steplist')
 }
 
 

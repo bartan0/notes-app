@@ -19,5 +19,4 @@ const SteplistItem = ({ nodePath, onSetActive }) => {
 		</li>
 }
 
-
 module.exports = SteplistItem
