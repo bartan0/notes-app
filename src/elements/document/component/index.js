@@ -1,6 +1,8 @@
+require('./style.sass')
+
 const React = require('react')
 const { useGService } = require('local/gservice')
-const { markdown } = require('local/lib')
+const { bem, markdown } = require('local/lib')
 
 const { useEffect, useRef, useState } = React
 
@@ -12,8 +14,7 @@ const Mode = {
 
 
 const DocumentElement = ({
-	nodePath,
-	showToolbar
+	nodePath
 }) => {
 	const textareaRef = useRef()
 	const [ document, documentStatus ] = useGService(nodePath)
@@ -27,39 +28,36 @@ const DocumentElement = ({
 
 
 	useEffect(() => {
-		if (mode === Mode.EDIT)
+		if (mode === Mode.EDIT) {
+			const cursorPos = document.content.length
+
 			textareaRef.current.focus()
+			textareaRef.current.setSelectionRange(cursorPos, cursorPos)
+		}
 	}, [
 		mode
 	])
 
 
 	return document ?
-		<div>
-			{showToolbar &&
-				<div>
-					<button onClick={() => setMode(1 - mode)}>
-						{mode === Mode.EDIT ?
-							'Show'
-						:
-							'Edit'
-						}
-					</button>
-				</div>
-			}
-
+		<div className={bem('document-element')}>
 			{mode === Mode.SHOW ?
 				<div
 					tabIndex="0"
+					className={bem('document-element', 'content', 'show')}
 					onFocus={() => setMode(Mode.EDIT)}
 					dangerouslySetInnerHTML={{ __html: markdown(document.content) }}
 				/>
 			:
-				<textarea
-					ref={textareaRef}
-					defaultValue={document.content}
-					onBlur={({ target: t }) => update(t.value)}
-				/>
+				<div className={bem('document-element', 'content', 'edit')}>
+					<textarea
+						ref={textareaRef}
+						cols={80}
+						rows={20}
+						defaultValue={document.content}
+						onBlur={({ target: t }) => update(t.value)}
+					/>
+				</div>
 			}
 		</div>
 	:

@@ -4,8 +4,8 @@ const React = require('react')
 const FocusContainer = require('local/containers/focus')
 const DynamicLabel = require('local/ui/dynamic-label')
 const ButtonGroup = require('local/ui/button-group')
+const ElementToolbar = require('local/ui/element-toolbar')
 const ChecklistElement = require('local/ui/checklist-element')
-const DocumentElement = require('local/ui/document-element')
 const SteplistElement = require('local/ui/steplist-element')
 const { Link } = require('react-router-dom')
 const { useGService } = require('local/gservice')
@@ -13,10 +13,10 @@ const { bem } = require('local/lib')
 
 const { useState } = React
 
-const components = {
-	CHECKLIST: ChecklistElement,
-	DOCUMENT: DocumentElement,
-	STEPLIST: SteplistElement
+const NoteElement = {
+	// CHECKLIST: ChecklistElement,
+	DOCUMENT: require('local/elements/document'),
+	// STEPLIST: SteplistElement
 }
 
 
@@ -33,7 +33,7 @@ const NoteView = ({ nodePath }) => {
 		<div className={bem('note')}>
 			{note ?
 				<div>
-					<ButtonGroup vertical>
+					<ButtonGroup>
 						<Link to="/">{'<<<'}</Link>
 						<button onClick={() => note.addChecklist()}>+ Checklist</button>
 						<button onClick={() => note.addDocument()}>+ Document</button>
@@ -48,7 +48,7 @@ const NoteView = ({ nodePath }) => {
 						{elements.length ?
 							elements.map(elem => {
 								const path = `${nodePath}/${elem.id}`
-								const Component = components[elem.type]
+								const Element = NoteElement[elem.type]
 
 								return (
 									<FocusContainer key={elem.id}
@@ -56,11 +56,12 @@ const NoteView = ({ nodePath }) => {
 										onBlur={() => setActiveId(null)}
 									>
 										{elem.id === activeId &&
-											<div>
-												<button onClick={() => elem.remove()}>X</button>
-											</div>
+											<ElementToolbar
+												actions={Element.actions}
+												element={elem}
+											/>
 										}
-										<Component nodePath={path} showToolbar={elem.id === activeId}/>
+										<Element.Component nodePath={path}/>
 									</FocusContainer>
 								)
 							})

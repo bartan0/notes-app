@@ -24,6 +24,10 @@ const App = withGService(
 	useEffect(() => {
 		if (status === Status.SIGNED_IN)
 			connect()
+
+		/* DEV ONLY */
+		if (status === Status.INIT)
+			signIn()
 	}, [
 		status
 	])
