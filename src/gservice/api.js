@@ -46,8 +46,8 @@ module.exports = {
 		return this
 	},
 
-	setTransformers (ts) {
-		this.$.transformers = ts
+	addTransformers (ts) {
+		Object.assign(this.$.transformers, ts)
 	},
 
 	setNodeMethods (methods) {

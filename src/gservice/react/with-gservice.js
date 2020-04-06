@@ -6,7 +6,7 @@ module.exports = (GService, cache) => {
 
 	return {
 		withGService:
-			transformers => Component => props => {
+			Component => props => {
 				const [ status, setStatus ] = useState(Status.ZERO)
 
 				const signIn = () => GService.signIn()
@@ -21,7 +21,6 @@ module.exports = (GService, cache) => {
 						.on('signOut', () => setStatus(Status.INIT))
 						.on('connect', () => setStatus(Status.CONNECTED))
 
-					GService.setTransformers(transformers)
 					GService.setNodeMethods({
 						update () {
 							GService.updateNode(this)

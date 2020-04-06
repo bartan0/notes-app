@@ -1,3 +1,5 @@
+require('./transformers')
+
 module.exports = {
 	Component: require('./component'),
 	actions: [

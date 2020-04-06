@@ -3,7 +3,6 @@ require('local/main.sass')
 const React = require('react')
 const { render } = require('react-dom')
 const { Status, withGService } = require('local/gservice')
-const transformers = require('local/transformers')
 const { BrowserRouter, Redirect, Route, Switch } = require('react-router-dom')
 const Dashboard = require('local/ui/dashboard')
 const Note = require('local/ui/note')
@@ -13,9 +12,7 @@ const SignOut = require('local/ui/sign-out')
 const { createElement, useEffect } = React
 
 
-const App = withGService(
-	transformers
-)(({
+const App = withGService(({
 	status,
 	connect,
 	signIn,

@@ -1,4 +1,5 @@
 require('./style.sass')
+require('./transformers')
 
 const React = require('react')
 const FocusContainer = require('local/containers/focus')
