@@ -2,7 +2,7 @@ require('./style.sass')
 require('./transformers')
 
 const React = require('react')
-const FocusContainer = require('local/containers/focus')
+const FocusContainer = require('local/ui/focus')
 const DynamicLabel = require('local/ui/dynamic-label')
 const ButtonGroup = require('local/ui/button-group')
 const ElementToolbar = require('local/ui/element-toolbar')
