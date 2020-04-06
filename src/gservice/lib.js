@@ -11,19 +11,33 @@ module.exports = {
 	},
 
 	_init () {
-		this.on('signIn', () => gapi.client.drive.files.list({
-			q: `name = "${this.DB_FILENAME}" and trashed = false`
+		gapi.load('client:auth2', () => {
+			gapi.client.init({
+				clientId: this.CLIENT_ID,
+				discoveryDocs: this.DISCOVERY_DOCS,
+				scope: this.AUTH_SCOPES.join(' ')
+			})
+				.then(() => {
+					this.$.auth = gapi.auth2.getAuthInstance()
+					this._emit('init')
+				})
 		})
-			.then(({ result: { files: [ dbFile ] } }) => dbFile
-				? this._initDBFile(dbFile.id)
-				: this._createDBFile()
-			)
-			.then(() => this._emit('init'))
-		)
 	},
 
 	_emit (event, ...args) {
 		this.$.listeners[event].forEach(f => f(...args))
+	},
+
+	_checkInit () {
+		if (!this.$.auth)
+			throw new Error('not-initialized')
+	},
+
+	_checkSignedIn() {
+		this._checkInit()
+
+		if (!this.$.auth.isSignedIn.get())
+			throw new Error('not-signed-in')
 	},
 
 	_ifConnected (action) {
@@ -35,13 +49,11 @@ module.exports = {
 		})
 	},
 
-
 	_onSignInStatusChange (status) {
 		this._emit(status ? 'signIn' : 'signOut')
 
 		return this._onSignInStatusChange.bind(this)
 	},
-
 
 	_insertRootNode (spreadsheetId) {
 		return gapi.client.sheets.spreadsheets.values.update({
@@ -63,7 +75,6 @@ module.exports = {
 			.then(() => spreadsheetId)
 	},
 
-
 	_createDBFile () {
 		return gapi.client.sheets.spreadsheets.create({
 			properties: {
@@ -77,7 +88,6 @@ module.exports = {
 				this.$.dbFileId = id
 			})
 	},
-
 
 	_initDBFile (spreadsheetId) {
 		return gapi.client.sheets.spreadsheets.get({ spreadsheetId })

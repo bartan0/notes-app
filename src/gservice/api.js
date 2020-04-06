@@ -5,39 +5,36 @@ const gvalues = () => gapi.client.sheets.spreadsheets.values
 
 
 module.exports = {
-	connect (signOut = false) {
-		return new Promise((resolve, reject) => gapi.load('client:auth2', () =>
-			resolve(gapi.client.init({
-				clientId: this.CLIENT_ID,
-				discoveryDocs: this.DISCOVERY_DOCS,
-				scope: this.AUTH_SCOPES.join(' ')
-			})
-				.then(() => {
-					const auth = gapi.auth2.getAuthInstance()
-					const isSignedIn = auth.isSignedIn
+	connect () {
+		this._checkSignedIn()
 
-					if (signOut)
-						return auth.signOut()
-
-					isSignedIn.listen(this._onSignInStatusChange(isSignedIn.get()))
-				})
+		gapi.client.drive.files.list({
+			q: `name = "${this.DB_FILENAME}" and trashed = false`
+		})
+			.then(({ result: { files: [ dbFile ] } }) => dbFile
+				? this._initDBFile(dbFile.id)
+				: this._createDBFile()
 			)
-		))
+			.then(() => this._emit('connect'))
 	},
 
 	signIn () {
-		const auth = gapi.auth2.getAuthInstance()
+		this._checkInit()
 
-		if (!auth.isSignedIn.get())
-			return auth.signIn()
+		if (!this.$.auth.isSignedIn.get())
+			return this.$.auth.signIn()
+				.then(() => this._emit('signIn'))
 
-		return PromiseResolve
+		this._emit('signIn')
 	},
 
 	signOut () {
-		return gapi.auth2
-			? gapi.auth2.getAuthInstance().signOut()
-			: this.connect(true)
+		this._checkInit()
+
+		this.$.auth.signOut()
+			.then(() => {
+				this._emit('signOut')
+			})
 	},
 
 	on (event, cb) {
@@ -45,6 +42,8 @@ module.exports = {
 
 		if (listeners)
 			listeners.push(cb)
+
+		return this
 	},
 
 	setTransformers (ts) {

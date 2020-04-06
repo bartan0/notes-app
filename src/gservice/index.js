@@ -22,19 +22,39 @@ const GService = Object.assign({
 			'=IFNA(INDIRECT("C" & MATCH(INDEX($B:$B, ROW()), $A:$A, 0)), 1)'
 	},
 
+	Status: {
+		ZERO: 0,
+		INIT: 1,
+		SIGNED_IN: 2,
+		CONNECTED: 3
+	},
+
+	NodeStatus: {
+		OK: 1,
+		PENDING: 2,
+		ERROR: 3,
+		NOT_FOUND: 4
+	},
+
 	$: {
+		auth: null,
 		dbFileId: null,
 		listeners: {
 			init: [],
 			signIn: [],
-			signOut: []
+			signOut: [],
+			connect: []
 		},
 		transformers: {},
 		nodeMethods: {}
-	},
+	}
 },
 	require('./lib'),
 	require('./api')
+)
+
+Object.assign(GService,
+	require('./react')(GService)
 )
 
 GService._init()
