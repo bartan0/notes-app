@@ -1,6 +1,6 @@
 const React = require('react')
 const DynamicLabel = require('local/ui/dynamic-label')
-const { useGService } = require('local/containers/gservice')
+const { useGService } = require('local/gservice')
 
 
 const ChecklistElementItem = ({ nodePath }) => {

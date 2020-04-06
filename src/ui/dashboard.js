@@ -1,12 +1,13 @@
 const React = require('react')
 const DynamicLabel = require('local/ui/dynamic-label')
-const { NodeStatus, useGService } = require('local/containers/gservice')
+const { NodeStatus, useGService } = require('local/gservice')
 const { Link } = require('react-router-dom')
 
 
 const Dashboard = () => {
 	const [ root ] = useGService()
 	const [ notes, status ] = useGService('/', n => n.type === 'NOTE')
+
 	/*
 	const {
 		NOTE: notes,

@@ -1,17 +1,22 @@
 const React = require('react')
+const { Redirect } = require('react-router')
 
 const { useEffect, useState } = React
 
 
-const SignOut = ({ signOut, redirect }) => {
+const SignOut = ({
+	target,
+	onSignOut
+}) => {
 	const [ done, setDone ] = useState(false)
 
 	useEffect(() => {
-		signOut().then(() => setDone(true))
+		if (match)
+			onSignOut().then(() => setDone(true))
 	}, [])
 
 	return done ?
-		redirect()
+		<Redirect to={target || '/'}/>
 	:
 		'Loading...'
 }

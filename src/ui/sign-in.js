@@ -4,9 +4,8 @@ const ToplevelBox = require('local/ui/toplevel-box')
 const { useState } = React
 
 
-const SignIn = ({ forceLoading, signIn }) => {
-	const [ loading, setLoading ] = useState(false)
-	const showLoading = loading || forceLoading
+const SignIn = ({ loading, onSignIn }) => {
+	const [ isLoading, setLoading ] = useState(!!loading)
 
 	return (
 		<ToplevelBox>
@@ -16,12 +15,12 @@ const SignIn = ({ forceLoading, signIn }) => {
 				}}/>
 
 				<div>
-					{showLoading ?
+					{isLoading ?
 						'Loading...'
 					:
 						<button onClick={() => {
 							setLoading(true)
-							signIn()
+							onSignIn()
 						}}>
 							Sign in with Google
 						</button>

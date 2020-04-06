@@ -1,5 +1,5 @@
 const React = require('react')
-const { useGService } = require('local/containers/gservice')
+const { useGService } = require('local/gservice')
 const { markdown } = require('local/lib')
 
 const { useEffect, useRef, useState } = React

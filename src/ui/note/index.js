@@ -8,7 +8,7 @@ const ChecklistElement = require('local/ui/checklist-element')
 const DocumentElement = require('local/ui/document-element')
 const SteplistElement = require('local/ui/steplist-element')
 const { Link } = require('react-router-dom')
-const { useGService } = require('local/containers/gservice')
+const { useGService } = require('local/gservice')
 const { bem } = require('local/lib')
 
 const { useState } = React
