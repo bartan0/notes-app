@@ -3,8 +3,8 @@ require('./transformers')
 
 const React = require('react')
 const FocusContainer = require('local/ui/focus')
-const DynamicLabel = require('local/ui/dynamic-label')
 const ButtonGroup = require('local/ui/button-group')
+const EditableLabel = require('local/ui/editable-label')
 const ElementToolbar = require('local/ui/element-toolbar')
 const { Link } = require('react-router-dom')
 const { useGService } = require('local/gservice')
@@ -40,7 +40,7 @@ const NoteView = ({ nodePath }) => {
 					</ButtonGroup>
 
 					<div className={bem('note', 'name')}>
-						<DynamicLabel content={note.name} onUpdate={name => note.setName(name)}/>
+						<EditableLabel value={note.name} onUpdate={name => note.setName(name)}/>
 					</div>
 
 					<div>

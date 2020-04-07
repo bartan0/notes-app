@@ -1,5 +1,5 @@
 const React = require('react')
-const DynamicLabel = require('local/ui/dynamic-label')
+const EditableLabel = require('local/ui/editable-label')
 const { useGService } = require('local/gservice')
 
 
@@ -8,8 +8,14 @@ const ChecklistElementItem = ({ nodePath }) => {
 
 	return item ?
 		<div>
-			<button onClick={() => item.remove()}>X</button>
-			<DynamicLabel content={item.content} onUpdate={content => item.setContent(content)}/>
+			<EditableLabel
+				actionsRight={[ {
+					icon: 'times',
+					action: () => item.remove()
+				} ]}
+				value={item.content}
+				onUpdate={content => item.setContent(content)}
+			/>
 		</div>
 	:
 		null

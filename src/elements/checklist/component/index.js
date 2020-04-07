@@ -1,5 +1,5 @@
 const React = require('react')
-const DynamicLabel = require('local/ui/dynamic-label')
+const EditableLabel = require('local/ui/editable-label')
 const { useGService } = require('local/gservice')
 
 const ChecklistElementItem = require('./item')
@@ -25,7 +25,7 @@ const ChecklistElement = ({
 					</div>
 				}
 
-				<DynamicLabel content={checklist.name} onUpdate={name => checklist.setName(name)}/>
+				<EditableLabel value={checklist.name} onUpdate={name => checklist.setName(name)}/>
 			</div>
 
 			<div>

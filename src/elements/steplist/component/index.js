@@ -1,5 +1,5 @@
 const React = require('react')
-const DynamicLabel = require('local/ui/dynamic-label')
+const EditableLabel = require('local/ui/editable-label')
 const { useGService } = require('local/gservice')
 
 const SteplistItem = require('./item')
@@ -28,7 +28,7 @@ const Steplist = ({
 					</div>
 				}
 
-				<DynamicLabel content={steplist.name} onUpdate={name => steplist.setName(name)}/>
+				<EditableLabel value={steplist.name} onUpdate={name => steplist.setName(name)}/>
 			</div>
 
 			{steps.length ?

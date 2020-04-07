@@ -1,7 +1,7 @@
 const React = require('react')
-const DynamicLabel = require('local/ui/dynamic-label')
 const { NodeStatus, useGService } = require('local/gservice')
 const { Link } = require('react-router-dom')
+const EditableLabel = require('local/ui/editable-label')
 
 
 const Dashboard = () => {
@@ -32,7 +32,7 @@ const Dashboard = () => {
 			{notes.map(note =>
 				<div key={note.id}>
 					<button onClick={() => note.remove()}>X</button>
-					<DynamicLabel content={note.name} onUpdate={name => note.setName(name)}/>
+					<EditableLabel value={note.name} onUpdate={name => note.setName(name)}/>
 					<Link to={`/note/${note.id}`}>{'>>>'}</Link>
 				</div>
 			)}
