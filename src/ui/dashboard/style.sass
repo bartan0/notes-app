@@ -1,3 +1,5 @@
+@use 'sass:color'
+
 .dashboard
 	display: grid
 	grid-template-columns: repeat(3, 1fr)
@@ -8,6 +10,12 @@
 	&__item
 		position: relative
 		background: lightgray
+
+		&:hover
+			background: color.scale(lightgray, $lightness: -10%)
+
+		&:active
+			background: color.scale(lightgray, $lightness: -20%)
 
 		a
 			color: inherit
