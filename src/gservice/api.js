@@ -31,7 +31,7 @@ module.exports = {
 	signOut () {
 		this._checkInit()
 
-		this.$.auth.signOut()
+		return this.$.auth.signOut()
 			.then(() => {
 				this._emit('signOut')
 			})

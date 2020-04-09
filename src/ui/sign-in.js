@@ -1,4 +1,3 @@
-const React = require('react')
 const ToplevelBox = require('local/ui/toplevel-box')
 
 const { useState } = React

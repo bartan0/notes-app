@@ -1,4 +1,3 @@
-const React = require('react')
 const { Redirect } = require('react-router')
 
 const { useEffect, useState } = React
@@ -11,8 +10,7 @@ const SignOut = ({
 	const [ done, setDone ] = useState(false)
 
 	useEffect(() => {
-		if (match)
-			onSignOut().then(() => setDone(true))
+		onSignOut().then(() => setDone(true))
 	}, [])
 
 	return done ?

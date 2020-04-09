@@ -9,6 +9,19 @@ const SignOut = require('local/ui/sign-out')
 const { useEffect, useState } = React
 
 
+const getTargetLocation = initialLocation => {
+	if ([
+		'/sign-in',
+		'/sign-out'
+	]
+		.includes(initialLocation.pathname)
+	)
+		return null
+
+	return initialLocation
+}
+
+
 const Router = withGService(({
 	status,
 	connect,
@@ -16,7 +29,9 @@ const Router = withGService(({
 	signOut
 }) => {
 	const location = useLocation()
-	const [ targetLocation, setTargetLocation ] = useState(location)
+	const [ targetLocation, setTargetLocation ] = useState(() =>
+		getTargetLocation(location)
+	)
 
 	useEffect(() => {
 		if (status === Status.SIGNED_IN)
@@ -25,14 +40,19 @@ const Router = withGService(({
 		if (status === Status.CONNECTED)
 			setTargetLocation(null)
 
-		/* DEV ONLY */
-		if (status === Status.INIT)
-			signIn()
+		if (_ROUTER_AUTO_SIGN_IN)
+			if (status === Status.INIT)
+				signIn()
 	}, [
 		status
 	])
 
 	return [
+		status === Status.ZERO &&
+			<div key="loading">
+				Loading...
+			</div>
+		,
 		status !== Status.CONNECTED &&
 			<Switch key="not-connected">
 				<Route exact path="/sign-in" render={() =>
@@ -45,27 +65,27 @@ const Router = withGService(({
 				<Redirect to="/sign-in"/>
 			</Switch>
 		,
-		status === Status.CONNECTED && targetLocation &&
+		targetLocation &&
 			<Redirect key="target-redirect" to={targetLocation}/>
 		,
-		!targetLocation &&
-			<Switch key="connected">
-				<Route exact path="/" render={() =>
-					<Dashboard/>
-				}/>
-				<Route exact path="/notes" render={() =>
-					<Dashboard onlyNotes/>
-				}/>
-				<Route exact path="/note/:id" render={({ match: { params } }) =>
-					<Note nodePath={`/${params.id}`}/>
-				}/>
-				<Route exact path="/sign-out" render={() =>
-					<SignOut/>
-				}/>
+		<Switch key="connected">
+			<Route exact path="/" render={() =>
+				<Dashboard/>
+			}/>
+			<Route exact path="/notes" render={() =>
+				<Dashboard onlyNotes/>
+			}/>
+			<Route exact path="/note/:id" render={({ match: { params } }) =>
+				<Note nodePath={`/${params.id}`}/>
+			}/>
+			<Route exact path="/sign-out" render={() =>
+				<SignOut onSignOut={signOut}/>
+			}/>
 
-				<Redirect to="/"/>
-			</Switch>
+			<Redirect to="/"/>
+		</Switch>
 	]
+		.filter(Boolean)[0]
 })
 
 module.exports = Router
