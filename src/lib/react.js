@@ -4,13 +4,14 @@ const { useRef, useState } = React
 
 
 module.exports = {
-	withMouseHover: Component =>
+	withMouseHover: divProps => Component =>
 		props => {
 			const ref = useRef()
 			const [ hover, setHover ] = useState(false)
 
 			return (
 				<div
+					{ ...divProps }
 					ref={ref}
 					onMouseEnter={() => setHover(true)}
 					onMouseLeave={({ relatedTarget }) => {

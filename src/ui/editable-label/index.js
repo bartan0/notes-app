@@ -7,17 +7,17 @@ const classNames = require('classnames')
 const { bem } = require('local/lib')
 const { withMouseHover } = require('local/lib/react')
 
-const { useRef, useState } = React
+const { useEffect, useRef, useState } = React
 
 const ACTION_BUTTON_WIDTH = 2
 
 
 const ActionButton = ({
 	action,
-	title,
-	icon,
 	brand,
-	label
+	icon,
+	label,
+	title
 }) =>
 	<button
 		className={bem('editable-label', 'button')}
@@ -33,9 +33,10 @@ const ActionButton = ({
 	</button>
 
 
-const EditableLabel = withMouseHover(({
+const EditableLabel = withMouseHover()(({
 	mouseHover,
 
+	autoFocus,
 	actionsLeft,
 	actionsRight,
 	value,
@@ -49,6 +50,15 @@ const EditableLabel = withMouseHover(({
 		if (key === 'Enter')
 			inputRef.current.blur()
 	}
+
+
+	useEffect(() => {
+		if (autoFocus)
+			inputRef.current.focus()
+	}, [
+		autoFocus
+	])
+
 
 	return (
 		<FocusContainer passFocus
