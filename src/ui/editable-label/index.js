@@ -6,7 +6,7 @@ const Icon = require('local/ui/icon')
 const classNames = require('classnames')
 const { bem } = require('local/lib')
 
-const { useEffect, useRef, useState } = React
+const { useRef, useState } = React
 
 const ACTION_BUTTON_WIDTH = 2
 
@@ -39,7 +39,6 @@ const EditableLabel = ({
 	onUpdate
 }) => {
 	const inputRef = useRef()
-	const containerRef = useRef()
 	const [ isEdit, setEdit ] = useState(false)
 
 	const onKey = ({ key }) => {
@@ -47,16 +46,8 @@ const EditableLabel = ({
 			inputRef.current.blur()
 	}
 
-	useEffect(() => {
-		if (isEdit)
-			containerRef.current.focus()
-	}, [
-		isEdit
-	])
-
 	return (
 		<FocusContainer passFocus
-			ref={containerRef}
 			className={bem('editable-label')}
 			onBlur={() => {
 				setEdit(false)
@@ -82,7 +73,10 @@ const EditableLabel = ({
 				type="text"
 				defaultValue={value}
 				onKeyDown={onKey}
-				onFocus={() => setEdit(true)}
+				onFocus={() => {
+					setEdit(true)
+					inputRef.current.setSelectionRange(0, value.length)
+				}}
 			/>
 
 			{isEdit && (actionsRight || []).map((action, i) =>
