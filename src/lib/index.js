@@ -6,11 +6,16 @@ module.exports = {
 	PromiseResolve: (...args) => new Promise(r => r(...args)),
 	isDefined: x => x !== undefined,
 
-	bem: (block, elem, mod) => [
-		block,
-		elem && `__${elem}`,
-		mod && `--${mod}`
-	].join(''),
+	bem: (block, elem, mods) => {
+		const stem = elem ? `${block}__${elem}` : block
+
+		return `${
+			stem
+		} ${(typeof mods === 'string' ? [ mods ] : mods || [])
+			.map(mod => `${stem}--${mod}`)
+			.join(' ')
+		}`
+	},
 
 	markdown: (markdown => text => markdown.render(text))
 		(new Markdown),
