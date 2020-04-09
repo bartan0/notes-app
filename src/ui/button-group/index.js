@@ -1,31 +1,46 @@
 require('./style.sass')
 
-const React = require('react')
+const { createElement } = require('react')
 const classNames = require('classnames')
+const { Link } = require('react-router-dom')
 const { bem } = require('local/lib')
+const Icon = require('local/ui/icon')
 
 
 const ButtonGroup = ({
-	buttons,
-	children,
-
+	actions,
 	vertical
 }) =>
-	<div className={classNames(bem('button-group'), {
-		horizontal: !vertical,
-		vertical: vertical
-	})}>
-		{buttons ?
-			buttons.map(({
-				action,
-				key,
-				label
-			}) =>
-				<button key={key} onClick={action}>{label}</button>
-			)
-		:
-			children
-		}
-	</div>
+	createElement('div', {
+		className: classNames(bem('button-group'), {
+			horizontal: !vertical,
+			vertical: vertical
+		})
+	}, actions.map(({
+		action,
+		brand,
+		icon,
+		label,
+		link,
+		title
+	}, key) => createElement(link ? Link : 'button', Object.assign({
+		key,
+		title,
+		className: classNames(
+			bem('button-group', 'button'),
+			icon
+				? bem('button-group', 'button', 'icon')
+				: bem('button-group', 'button', 'label')
+		)
+	}, link ? {
+		to: link
+	} : {
+		onClick: action
+	}),
+	icon ?
+		createElement(Icon, { brand, name: icon })
+	:
+		label
+	)))
 
 module.exports = ButtonGroup

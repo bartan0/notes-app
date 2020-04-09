@@ -5,8 +5,8 @@ const React = require('react')
 const FocusContainer = require('local/ui/focus')
 const ButtonGroup = require('local/ui/button-group')
 const EditableLabel = require('local/ui/editable-label')
-const ElementToolbar = require('local/ui/element-toolbar')
-const { Link } = require('react-router-dom')
+const Icon = require('local/ui/icon')
+const { useHistory } = require('react-router-dom')
 const { useGService } = require('local/gservice')
 const { bem } = require('local/lib')
 
@@ -26,18 +26,35 @@ const NoteView = ({ nodePath }) => {
 		note,
 		noteStatus
 	] = useGService(`${nodePath}/`)
+	const history = useHistory()
 	const [ activeId, setActiveId ] = useState(null)
 
 	return (
 		<div className={bem('note')}>
 			{note ?
 				<div>
-					<ButtonGroup>
-						<Link to="/">{'<<<'}</Link>
-						<button onClick={() => note.addChecklist()}>+ Checklist</button>
-						<button onClick={() => note.addDocument()}>+ Document</button>
-						<button onClick={() => note.addSteplist()}>+ Steplist</button>
-					</ButtonGroup>
+					<ButtonGroup actions={[
+						{
+							icon: 'chevron-left',
+							title: 'Go Back',
+							action: () => history.goBack()
+						},
+						{
+							icon: 'tasks',
+							title: 'Add Checklist',
+							action: () => note.addChecklist()
+						},
+						{
+							icon: 'file-alt',
+							title: 'Add Document',
+							action: () => note.addDocument()
+						},
+						{
+							icon: 'list-ol',
+							title: 'Add Steplist',
+							action: () => note.addSteplist()
+						}
+					]}/>
 
 					<div className={bem('note', 'name')}>
 						<EditableLabel value={note.name} onUpdate={name => note.setName(name)}/>
@@ -54,12 +71,6 @@ const NoteView = ({ nodePath }) => {
 										onFocus={() => setActiveId(elem.id)}
 										onBlur={() => setActiveId(null)}
 									>
-										{elem.id === activeId &&
-											<ElementToolbar
-												actions={Element.actions}
-												element={elem}
-											/>
-										}
 										<Element.Component nodePath={path}/>
 									</FocusContainer>
 								)
@@ -70,7 +81,7 @@ const NoteView = ({ nodePath }) => {
 					</div>
 				</div>
 			:
-				<Link to="/">{'<<<'}</Link>
+				<button onClick={() => history.goBack()}>Back</button>
 			}
 		</div>
 	)
