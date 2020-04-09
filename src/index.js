@@ -1,7 +1,7 @@
+require('local/global')
 require('local/main.sass')
 require('@fortawesome/fontawesome-free/css/all.css')
 
-const React = require('react')
 const { render } = require('react-dom')
 const { Status, withGService } = require('local/gservice')
 const { BrowserRouter, Redirect, Route, Switch, useLocation } = require('react-router-dom')
