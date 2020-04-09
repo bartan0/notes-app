@@ -27,7 +27,6 @@ const NoteView = ({ nodePath }) => {
 		noteStatus
 	] = useGService(`${nodePath}/`)
 	const history = useHistory()
-	const [ activeId, setActiveId ] = useState(null)
 
 	return (
 		<div className={bem('note')}>
@@ -75,12 +74,10 @@ const NoteView = ({ nodePath }) => {
 								const Element = NoteElement[elem.type]
 
 								return (
-									<FocusContainer key={elem.id}
-										onFocus={() => setActiveId(elem.id)}
-										onBlur={() => setActiveId(null)}
-									>
-										<Element.Component nodePath={path}/>
-									</FocusContainer>
+									<Element.Component
+										key={elem.id}
+										nodePath={path}
+									/>
 								)
 							})
 						:
