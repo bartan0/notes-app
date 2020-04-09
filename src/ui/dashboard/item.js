@@ -4,12 +4,7 @@ const { Link } = require('react-router-dom')
 const { bem, userConfirm } = require('local/lib')
 const { withMouseHover } = require('local/lib/react')
 
-const { createElement, useState } = React
-
-const maybeLink = (condition, to, element) => condition ?
-	<Link to={to}>{element}</Link>
-:
-	element
+const { useState } = React
 
 
 const Item = withMouseHover({
@@ -23,18 +18,15 @@ const Item = withMouseHover({
 	const [ isEdit, setEdit ] = useState(false)
 
 	return [
-		maybeLink(!isEdit, target,
+		// TODO: editing name (modal)
+		<Link key="name" to={target}>
 			<div className={bem('dashboard', 'item-name')}>
-				{isEdit ?
-					// TODO: display "edit name" modal
-					item.name
-				:
-					item.name
-				}
+				{item.name}
 			</div>
-		),
+		</Link>
+		,
 		mouseHover &&
-			<div className={bem('dashboard', 'item-controls')}>
+			<div key="buttons" className={bem('dashboard', 'item-controls')}>
 				<ButtonGroup actions={[
 					{
 						icon: 'edit',
