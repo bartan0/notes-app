@@ -21,16 +21,6 @@ module.exports = {
 			: line.split(',')
 		: [],
 
-	createCBQueue: (callbacks = []) =>
-		Object.assign(callbacks, {
-			run (initVal) {
-				return this.reduce(
-					(p, cb) => p.then(cb),
-					new Promise(r => r(initVal))
-				)
-			}
-		}),
-
 	userConfirm: (msg, cbInfo) => {
 		if (typeof cbInfo === 'function')
 			cbInfo = {

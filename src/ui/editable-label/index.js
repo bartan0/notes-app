@@ -5,33 +5,11 @@ const FocusContainer = require('local/ui/focus')
 const Icon = require('local/ui/icon')
 const classNames = require('classnames')
 const { bem } = require('local/lib')
+const { withMouseHover } = require('local/lib/react')
 
 const { useRef, useState } = React
 
 const ACTION_BUTTON_WIDTH = 2
-
-
-const withMouseHover = Component =>
-	props => {
-		const ref = useRef()
-		const [ hover, setHover ] = useState(false)
-
-		return (
-			<div
-				ref={ref}
-				onMouseEnter={() => setHover(true)}
-				onMouseLeave={({ relatedTarget }) => {
-					if (
-						relatedTarget === window ||
-						!ref.current.contains(relatedTarget)
-					)
-						setHover(false)
-				}}
-			>
-				<Component mouseHover={hover} { ...props }/>
-			</div>
-		)
-	}
 
 
 const ActionButton = ({
