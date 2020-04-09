@@ -6,8 +6,7 @@ const ChecklistElementItem = require('./item')
 
 
 const ChecklistElement = ({
-	nodePath,
-	showToolbar
+	nodePath
 }) => {
 	const [
 		items,
@@ -18,15 +17,22 @@ const ChecklistElement = ({
 
 	return checklist ?
 		<div>
-			<div>
-				{showToolbar &&
-					<div>
-						<button onClick={() => checklist.addItem()}>+ Item</button>
-					</div>
-				}
-
-				<EditableLabel value={checklist.name} onUpdate={name => checklist.setName(name)}/>
-			</div>
+			<EditableLabel
+				value={checklist.name}
+				onUpdate={name => checklist.setName(name)}
+				actionsRight={[
+					{
+						icon: 'plus',
+						title: 'Add Item',
+						action: () => checklist.addItem()
+					},
+					{
+						icon: 'ban',
+						title: 'Remove Checklist',
+						action: () => checklist.remove()
+					}
+				]}
+			/>
 
 			<div>
 				{items.map(({ id }) =>

@@ -11,6 +11,7 @@ const ChecklistElementItem = ({ nodePath }) => {
 			<EditableLabel
 				actionsRight={[ {
 					icon: 'times',
+					title: 'Remove Item',
 					action: () => item.remove()
 				} ]}
 				value={item.content}

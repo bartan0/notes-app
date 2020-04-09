@@ -11,6 +11,29 @@ const { useRef, useState } = React
 const ACTION_BUTTON_WIDTH = 2
 
 
+const withMouseHover = Component =>
+	props => {
+		const ref = useRef()
+		const [ hover, setHover ] = useState(false)
+
+		return (
+			<div
+				ref={ref}
+				onMouseEnter={() => setHover(true)}
+				onMouseLeave={({ relatedTarget }) => {
+					if (
+						relatedTarget === window ||
+						!ref.current.contains(relatedTarget)
+					)
+						setHover(false)
+				}}
+			>
+				<Component mouseHover={hover} { ...props }/>
+			</div>
+		)
+	}
+
+
 const ActionButton = ({
 	action,
 	title,
@@ -32,7 +55,9 @@ const ActionButton = ({
 	</button>
 
 
-const EditableLabel = ({
+const EditableLabel = withMouseHover(({
+	mouseHover,
+
 	actionsLeft,
 	actionsRight,
 	value,
@@ -41,6 +66,7 @@ const EditableLabel = ({
 	const inputRef = useRef()
 	const [ isEdit, setEdit ] = useState(false)
 
+	const showActions = mouseHover || isEdit
 	const onKey = ({ key }) => {
 		if (key === 'Enter')
 			inputRef.current.blur()
@@ -54,14 +80,14 @@ const EditableLabel = ({
 				onUpdate(inputRef.current.value)
 			}}
 		>
-			{isEdit && (actionsLeft || []).map((action, i) =>
+			{showActions && (actionsLeft || []).map((action, i) =>
 				<ActionButton key={2 * i} { ...action }/>
 			)}
 
 			<input
 				ref={inputRef}
 				className={classNames(bem('editable-label', 'input'), { display: !isEdit })}
-				style={isEdit
+				style={showActions
 					? {
 						marginLeft: `-${(actionsLeft || []).length * ACTION_BUTTON_WIDTH}em`,
 						marginRight: `-${(actionsRight || []).length * ACTION_BUTTON_WIDTH}em`,
@@ -79,11 +105,11 @@ const EditableLabel = ({
 				}}
 			/>
 
-			{isEdit && (actionsRight || []).map((action, i) =>
+			{showActions && (actionsRight || []).map((action, i) =>
 				<ActionButton key={2 * i + 1} { ...action }/>
 			)}
 		</FocusContainer>
 	)
-}
+})
 
 module.exports = EditableLabel
