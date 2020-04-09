@@ -8,7 +8,7 @@ const EditableLabel = require('local/ui/editable-label')
 const Icon = require('local/ui/icon')
 const { useHistory } = require('react-router-dom')
 const { useGService } = require('local/gservice')
-const { bem } = require('local/lib')
+const { bem, userConfirm } = require('local/lib')
 
 const { useState } = React
 
@@ -53,6 +53,14 @@ const NoteView = ({ nodePath }) => {
 							icon: 'list-ol',
 							title: 'Add Steplist',
 							action: () => note.addSteplist()
+						},
+						{
+							icon: 'ban',
+							title: 'Remove Note',
+							action: () => userConfirm(
+								'Do you really want to remove this note?',
+								() => note.remove()
+							)
 						}
 					]}/>
 

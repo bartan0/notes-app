@@ -29,5 +29,18 @@ module.exports = {
 					new Promise(r => r(initVal))
 				)
 			}
-		})
+		}),
+
+	userConfirm: (msg, cbInfo) => {
+		if (typeof cbInfo === 'function')
+			cbInfo = {
+				accept: cbInfo,
+				cancel: null
+			}
+
+		if (window.confirm(msg))
+			cbInfo.accept()
+		else if (cbInfo.cancel)
+			cbInfo.cancel()
+	}
 }
