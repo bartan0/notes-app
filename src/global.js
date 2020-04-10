@@ -1,3 +1,4 @@
 Object.assign(window, {
-	React: require('react')
+	React: require('react'),
+	SimpleSchema: require('simpl-schema')
 })
