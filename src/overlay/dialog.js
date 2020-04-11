@@ -5,6 +5,7 @@ const { xbem } = require('local/lib')
 const Dialog = ({
 	type,
 	title,
+	titleIcon,
 	message,
 	icon,
 
@@ -43,6 +44,10 @@ const Dialog = ({
 					<div { ...xbem('dialog', 'header') }>
 						<div { ...xbem('dialog', 'header-title') }>
 							{title}
+						</div>
+
+						<div { ...xbem('dialog', 'header-icon') }>
+							<Icon name={titleIcon}/>
 						</div>
 					</div>
 				}
