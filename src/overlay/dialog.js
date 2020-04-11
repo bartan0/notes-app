@@ -11,6 +11,7 @@ const Dialog = ({
 	onAccept,
 	onCancel,
 	onClose,
+	onClick,
 
 	_onClose
 }) => {
@@ -20,56 +21,66 @@ const Dialog = ({
 	}
 
 	return (
-		<div { ...xbem('dialog') }>
-			<div { ...xbem('dialog', 'status-indicator', type) }/>
+		<div { ...xbem('dialog') }
+			onClick={onClick && action(onClick)}
+		>
+			{type &&
+				<div { ...xbem('dialog', 'status-indicator', type) }/>
+			}
+
+			<div { ...xbem('dialog', 'top-actions') }>
+				{onClose &&
+					<button { ...xbem('dialog', 'top-actions-button') }
+						onClick={action(onClose)}
+					>
+						<Icon name="times"/>
+					</button>
+				}
+			</div>
 
 			<div { ...xbem('dialog', 'body') }>
-				<div { ...xbem('dialog', 'header') }>
-					<div { ...xbem('dialog', 'header-title') }>
-						{title}
+				{title &&
+					<div { ...xbem('dialog', 'header') }>
+						<div { ...xbem('dialog', 'header-title') }>
+							{title}
+						</div>
 					</div>
-
-					<div { ...xbem('dialog', 'header-actions') }>
-						{onClose &&
-							<button { ...xbem('dialog', 'header-actions-button') }
-								onClick={action(onClose)}
-							>
-								<Icon name="times"/>
-							</button>
-						}
-					</div>
-				</div>
+				}
 
 				<div { ...xbem('dialog', 'content') }>
 					<div { ...xbem('dialog', 'content-message') }>
 						{message}
 					</div>
 
-					<div { ...xbem('dialog', 'content-icon') }>
-						<Icon name={icon}/>
+					{icon &&
+						<div { ...xbem('dialog', 'content-icon') }>
+							<Icon name={icon}/>
+						</div>
+					}
+				</div>
+
+				{(onCancel || onAccept) &&
+					<div { ...xbem('dialog', 'actions') }>
+						{onCancel &&
+							<button { ...xbem('dialog', 'actions-button', 'secondary') }
+								onClick={action(onCancel)}
+							>
+								Cancel
+							</button>
+						}
+
+						{onAccept &&
+							<button { ...xbem('dialog', 'actions-button', [
+								'primary',
+								`primary-${type || 'action'}`
+							]) }
+								onClick={action(onAccept)}
+							>
+								OK
+							</button>
+						}
 					</div>
-				</div>
-
-				<div { ...xbem('dialog', 'actions') }>
-					{onCancel &&
-						<button { ...xbem('dialog', 'actions-button', 'secondary') }
-							onClick={action(onCancel)}
-						>
-							Cancel
-						</button>
-					}
-
-					{onAccept &&
-						<button { ...xbem('dialog', 'actions-button', [
-							'primary',
-							`primary-${type}`
-						]) }
-							onClick={action(onAccept)}
-						>
-							Accept
-						</button>
-					}
-				</div>
+				}
 			</div>
 		</div>
 	)

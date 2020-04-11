@@ -12,7 +12,6 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 	position: relative
 
 .dialog
-
 	font-size: .84rem
 	display: flex
 	position: absolute
@@ -28,6 +27,26 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 			&--#{$type}
 				background-color: map.get($dialog-types-colors, $type)
 
+	&__top-actions
+		position: absolute
+		top: 1em
+		right: .5em
+		text-align: right
+
+		&-button
+			font-size: 1.3em
+			border: none
+			background: none
+			width: 2em
+			color: $color-dialog-header-button
+			outline: none
+
+			&:hover, &:focus
+				color: color.scale($color-dialog-header-button, $lightness: +15%)
+
+			&:active
+				color: color.scale($color-dialog-header-button, $lightness: -15%)
+
 	&__header
 		display: flex
 		padding: 1em
@@ -39,30 +58,12 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 		&-title
 			font-size: 1.6em
 
-		&-actions
-			text-align: right
-
-			&-button
-				font-size: 1.3em
-				border: none
-				background: none
-				width: 2em
-				color: $color-dialog-header-button
-				outline: none
-
-				&:hover, &:focus
-					color: color.scale($color-dialog-header-button, $lightness: +15%)
-
-				&:active
-					color: color.scale($color-dialog-header-button, $lightness: -15%)
-
 	&__content
 		display: flex
-		padding: .5em 1em
-		padding-left: 1.8em
+		padding: .5em 1.8em
 
 		&-message
-			margin-top: 1em
+			margin: 1em 0
 			font-size: 1.2em
 
 		&-icon
