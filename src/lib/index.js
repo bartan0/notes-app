@@ -17,6 +17,18 @@ module.exports = {
 		}`
 	},
 
+	xbem: (block, elem, mods) => {
+		const stem = elem ? `${block}__${elem}` : block
+
+		return { className: `${
+			stem
+		} ${(typeof mods === 'string' ? [ mods ] : mods || [])
+			.map(mod => `${stem}--${mod}`)
+			.join(' ')
+		}` }
+	},
+
+
 	markdown: (markdown => text => markdown.render(text))
 		(new Markdown),
 
