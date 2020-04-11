@@ -5,6 +5,7 @@ const { bem } = require('local/lib')
 
 const Dialog = require('./dialog')
 const Messages = require('./messages')
+const Dimmer = require('./dimmer')
 
 const { createElement, useEffect, useRef, useState } = React
 
@@ -16,6 +17,7 @@ module.exports = Context => ({
 	const [ contextValue, setContextValue ] = useState(null)
 	const [ dialogs, setDialogs ] = useState([])
 	const [ messages, setMessages ] = useState([])
+	const [ showDimmer, setShowDimmer ] = useState(false)
 
 	useEffect(() => {
 		ref.current = {
@@ -48,6 +50,9 @@ module.exports = Context => ({
 						setMessages(ms => ms.filter(m => m.id !== id))
 				})
 			})
+			,
+			showDimmer: () => setShowDimmer(true),
+			hideDimmer: () => setShowDimmer(false)
 		})
 
 		return () => {
@@ -70,7 +75,11 @@ module.exports = Context => ({
 						key: 'messages',
 						messages
 					})
-					: null
+					: null,
+				showDimmer && createElement(Dimmer, {
+					key: 'dimmer',
+					loader: true
+				})
 			],
 				ref.current.anchor
 			)
