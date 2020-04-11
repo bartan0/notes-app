@@ -12,13 +12,16 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 	position: relative
 
 .dialog
-	font-size: .84rem
+	font-size: .84em
 	display: flex
-	position: absolute
+	position: relative
 	border: 1px solid black
 	background-color: $color-dialog-background
 	max-width: 28em
 	filter: drop-shadow(0.2em 0.3em 0.3em  black)
+
+	&--toplevel
+		position: absolute
 
 	&__status-indicator
 		width: 1em
@@ -107,3 +110,16 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 
 				&:active
 					background-color: color.scale($color-secondary, $lightness: -15%)
+
+.messages
+	position: fixed
+	display: flex
+	flex-direction: column-reverse
+	bottom: 0
+	right: 0
+	height: 100%
+	padding: .9em 0
+
+	&__message-container
+		margin-top: 1.5em
+		margin-right: 1em

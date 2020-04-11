@@ -14,6 +14,7 @@ const Dialog = ({
 	onClose,
 	onClick,
 
+	_toplevel,
 	_onClose
 }) => {
 	const action = cb => () => {
@@ -22,7 +23,7 @@ const Dialog = ({
 	}
 
 	return (
-		<div { ...xbem('dialog') }
+		<div { ...xbem('dialog', null, _toplevel && 'toplevel') }
 			onClick={onClick && action(onClick)}
 		>
 			{type &&
