@@ -10,6 +10,15 @@ const Dimmer = require('./dimmer')
 const { createElement, useEffect, useRef, useState } = React
 
 
+const createAnchors = () => ({
+	dialog: Dialog.createAnchor()
+})
+
+const deleteAnchors = () => {
+	Dialog.deleteAnchor()
+}
+
+
 module.exports = Context => ({
 	children
 }) => {
@@ -17,21 +26,21 @@ module.exports = Context => ({
 	const [ contextValue, setContextValue ] = useState(null)
 	const [ dialogs, setDialogs ] = useState([])
 	const [ messages, setMessages ] = useState([])
-	const [ showDimmer, setShowDimmer ] = useState(false)
+	const [ dimmer, setDimmer ] = useState(null)
+
+	const showDimmer = dimmer || (dialogs[0] || {}).dimmer
+
 
 	useEffect(() => {
 		ref.current = {
 			provider: Context.Provider,
-			anchor: document.createElement('div'),
+			anchors: createAnchors(),
 			id () {
 				return this.id.value
 					? ++this.id.value
 					: this.id.value = 1
 			}
 		}
-
-		ref.current.anchor.className = bem('overlay')
-		document.body.appendChild(ref.current.anchor)
 
 		setContextValue({
 			dialog: spec => setDialogs(ds => ds.concat({
@@ -51,38 +60,54 @@ module.exports = Context => ({
 				})
 			})
 			,
-			showDimmer: () => setShowDimmer(true),
-			hideDimmer: () => setShowDimmer(false)
+			showDimmer: loader => setDimmer({ loader })
+			,
+			hideDimmer: () => setDimmer(null)
 		})
 
-		return () => {
-			document.body.removeChild(ref.current.anchor)
-		}
+		return deleteAnchors
 	}, [])
+
+
+	return contextValue ?
+		<ref.current.provider value={contextValue}>
+			{children}
+			{dialogs[0] && createPortal(
+				<Dialog.Component { ...dialogs[0] }/>,
+				ref.current.anchors.dialog
+			)}
+		</ref.current.provider>
+	:
+		null
+
 
 	return contextValue
 		? createElement(ref.current.provider, {
 			value: contextValue
 		},
 			children,
+			/*
 			createPortal([
+				showDimmer && createElement(Dimmer, {
+					key: 'dimmer',
+					...dimmer
+				})
+				,
 				dialogs[0] && createElement(Dialog, {
 					key: 'dialog',
 					...dialogs[0]
-				}),
+				})
+				,
 				messages.length
 					? createElement(Messages, {
 						key: 'messages',
 						messages
 					})
-					: null,
-				showDimmer && createElement(Dimmer, {
-					key: 'dimmer',
-					loader: true
-				})
+					: null
 			],
 				ref.current.anchor
 			)
+			*/
 		)
 		: null
 }

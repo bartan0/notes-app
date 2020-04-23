@@ -4,5 +4,6 @@ config.dev.json
 config.prod.json
 
 /build
+/materials
 /node_modules
 /vendor

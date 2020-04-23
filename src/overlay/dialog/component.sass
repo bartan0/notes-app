@@ -1,0 +1,56 @@
+@use 'sass:color'
+@use 'sass:map'
+
+.overlay-dialog
+	$types: action, info, warn, error
+	$colors: ( action: blue, info: green, warn: yellow, error: red )
+
+	background-color: lightgray
+
+	&-color
+		width: .7em
+
+		@each $type in $types
+			&-#{$type}
+				background-color: map.get($colors, $type)
+
+	&-body
+		max-width: 40em
+
+	&-actions
+		padding: 1em
+		padding-top: .8em
+		justify-content: flex-end
+
+		&-button
+			$color: gray
+
+			flex-basis: 7em
+			padding: .5em
+			margin-left: 1em
+			margin-right: 1em
+			background-color: $color
+
+			&:hover
+				background-color: color.scale($color, $lightness: +15%)
+
+			&:active
+				background-color: color.scale($color, $lightness: -15%)
+
+			&:first-child
+				margin-left: 0
+
+			&:last-child
+				margin-right: 0
+
+			@each $type in $types
+				&-primary-#{$type}
+					$color: map.get($colors, $type)
+
+					background-color: $color
+
+					&:hover
+						background-color: color.scale($color, $lightness: +15%)
+
+					&:active
+						background-color: color.scale($color, $lightness: -15%)

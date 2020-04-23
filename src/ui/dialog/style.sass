@@ -1,0 +1,50 @@
+.dialog
+	&-overlay
+		position: fixed
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		background-color: #00000080
+		display: flex
+		justify-content: center
+		place-items: flex-start
+		padding-top: 8%
+
+	&-container
+		max-width: 40em
+		min-width: 20em
+		display: flex
+		flex-direction: column
+		background-color: #dcdcdc
+		padding-left: 1em
+		padding-right: 1em
+
+	&-title
+		font-size: 1.3em
+		padding-top: .5em
+		margin-bottom: .4em
+
+	&-content
+		padding-top: 1em
+		padding-bottom: 1em
+
+	&-actions
+		display: flex
+		padding-top: .7em
+		padding-bottom: .7em
+		justify-content: flex-end
+
+		&-button
+			font-size: .9em
+			flex-basis: 8em
+			border: none
+			background: gray
+			padding: .5em 1.3em
+			margin: 0 1em
+
+			&:first-child
+				margin-left: 0
+
+			&:last-child
+				margin-right: 0

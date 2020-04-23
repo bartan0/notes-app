@@ -3,11 +3,18 @@ $dimmer-color-background: #000000d4
 .dimmer
 	position: fixed
 	display: flex
+	top: 0
+	left: 0
 	width: 100%
 	height: 100%
-	background: $dimmer-color-background url('~vendor/loader.svg')
-	background-position: center center
-	background-repeat: no-repeat
-	background-size: 10%
+	background: $dimmer-color-background
 	justify-content: center
 	place-items: center
+
+	&__loader
+		width: 6em
+		height: 6em
+		background: url('~vendor/loader.svg')
+		background-position: center center
+		background-repeat: no-repeat
+		background-size: cover

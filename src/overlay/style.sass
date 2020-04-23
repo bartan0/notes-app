@@ -9,9 +9,7 @@ $dialog-types: action, info, warn, error
 $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #ff0018 )
 
 .overlay
-	position: absolute
-	top: 0
-	left: 0
+	position: relative
 
 .dialog
 	font-size: .84em
@@ -23,7 +21,7 @@ $dialog-types-colors: ( action: #6b6bff, info: #15ce15, warn: #e8e800, error: #f
 	filter: drop-shadow(0.2em 0.3em 0.3em  black)
 
 	&--toplevel
-		position: absolute
+		position: fixed
 
 	&__status-indicator
 		width: 1em

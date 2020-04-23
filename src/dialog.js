@@ -10,12 +10,7 @@ const { createPortal } = require('react-dom')
 
 const Context = createContext()
 
-const useDialog = () => {
-	return useContext(Context)
-}
-
-
-const DialogContainer = ({
+const DialogProvider = ({
 	component,
 	children
 }) => {
@@ -31,9 +26,7 @@ const DialogContainer = ({
 	}, [])
 
 	return createElement(Context.Provider, {
-		value: {
-			dialog: dialogProps => setQueue(q => q.concat(dialogProps))
-		}
+		value: setQueue
 	},
 		children,
 		queue.length
@@ -49,7 +42,14 @@ const DialogContainer = ({
 }
 
 
+const useDialog = () => {
+	const setQueue = useContext(Context)
+
+	return props => setQueue(q => q.concat(props))
+}
+
+
 module.exports = {
-	DialogContainer,
+	DialogProvider,
 	useDialog
 }
