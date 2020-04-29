@@ -14,7 +14,12 @@ const Dashboard = () => {
 		<div className={bem('dashboard')}>
 			{itemsStatus === NodeStatus.OK ? items
 				.map(item =>
-					<Item key={item.id} item={item} target={`/note/${item.id}`}/>
+					<Item
+						key={item.id}
+						className={bem('dashboard', 'item')}
+						item={item}
+						target={`/note/${item.id}`}
+					/>
 				)
 				.concat(
 					<button

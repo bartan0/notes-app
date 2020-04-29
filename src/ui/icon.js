@@ -3,8 +3,11 @@ const classNames = require('classnames')
 
 const Icon = ({
 	name,
-	brand
+	brand,
+	className,
+
+	...props
 }) =>
-	<i className={classNames({ fas: !brand, fab: brand }, 'fa-' + name)}/>
+	<i className={classNames({ fas: !brand, fab: brand }, 'fa-' + name, className)} { ...props }/>
 
 module.exports = Icon

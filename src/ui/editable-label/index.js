@@ -33,14 +33,16 @@ const ActionButton = ({
 	</button>
 
 
-const EditableLabel = withMouseHover()(({
+const EditableLabel = withMouseHover(({
 	mouseHover,
 
 	autoFocus,
 	actionsLeft,
 	actionsRight,
 	value,
-	onUpdate
+	onUpdate,
+
+	className
 }) => {
 	const inputRef = useRef()
 	const [ isEdit, setEdit ] = useState(false)
@@ -62,7 +64,7 @@ const EditableLabel = withMouseHover()(({
 
 	return (
 		<FocusContainer passFocus
-			className={bem('editable-label')}
+			className={classNames(bem('editable-label'), className)}
 			onBlur={() => {
 				setEdit(false)
 				onUpdate(inputRef.current.value)

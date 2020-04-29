@@ -7,9 +7,7 @@ const { withMouseHover } = require('local/lib/react')
 const { useState } = React
 
 
-const Item = withMouseHover({
-	className: bem('dashboard', 'item')
-})(({
+const Item = withMouseHover(({
 	mouseHover,
 
 	item,
