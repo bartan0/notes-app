@@ -6,14 +6,12 @@ const SteplistItem = require('./item')
 
 
 const Steplist = ({
-	nodePath,
-	showToolbar
+	nodePath
 }) => {
 	const [
 		steps,
 		stepsStatus,
 		steplist,
-		steplistStatus
 	] = useGService(`${nodePath}/`)
 
 	const switchActiveStep = id =>
@@ -21,18 +19,32 @@ const Steplist = ({
 
 	return steplist ?
 		<div>
-			<div>
-				{showToolbar &&
-					<div>
-						<button onClick={() => steplist.addStep()}>+ Step</button>
-					</div>
-				}
-
-				<EditableLabel value={steplist.name} onUpdate={name => steplist.setName(name)}/>
-			</div>
+			<EditableLabel
+				value={steplist.name}
+				actionsRight={[
+					{
+						icon: 'plus',
+						title: 'Add Item',
+						action: () => steplist.addStep()
+					}, {
+						icon: 'chevron-up',
+						title: 'Move Up',
+						action: () => steplist.reorder(-1)
+					}, {
+						icon: 'chevron-down',
+						title: 'Move Down',
+						action: () => steplist.reorder(1)
+					}, {
+						icon: 'ban',
+						title: 'Remove Checklist',
+						action: () => steplist.remove()
+					}
+				]}
+				onUpdate={name => steplist.setName(name)}
+			/>
 
 			{steps.length ?
-				<ol>
+				<div>
 					{steps.map(({ id }) =>
 						<SteplistItem
 							key={id}
@@ -40,7 +52,7 @@ const Steplist = ({
 							onSetActive={switchActiveStep}
 						/>
 					)}
-				</ol>
+				</div>
 			:
 				<div>No steps</div>
 			}
