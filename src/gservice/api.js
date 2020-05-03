@@ -64,7 +64,7 @@ module.exports = {
 			index: null,
 			id: UUID(),
 			pid: parent.id,
-			order: 1, // TODO: Should be the last somehow, verify if order arg is needed
+			order: +new Date,
 			childIndexes: [],
 			type
 		}
@@ -133,17 +133,22 @@ module.exports = {
 		})
 	},
 
-	reorderNodes (
-		{ index: i1, order: o1 },
-		{ index: i2, order: o2 }
-	) {
+	reorderNodes (n1, n2) {
 		return this._ifConnected(() => gvalues().batchUpdate({
+			spreadsheetId: this.$.dbFileId,
 			valueInputOption: 'RAW',
 			data: [
-				{ range: `nodes!D${i1}`, values: [ [ o2 ] ] },
-				{ range: `nodes!D${i2}`, values: [ [ o1 ] ] }
+				{ range: `nodes!D${n1.index}`, values: [ [ n2.order ] ] },
+				{ range: `nodes!D${n2.index}`, values: [ [ n1.order ] ] }
 			]
-		}))
+		})
+			.then(() => {
+				const tmp = n1.order
+
+				n1.order = n2.order
+				n2.order = tmp
+			})
+		)
 	},
 
 	updateNode (node) {

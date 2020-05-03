@@ -62,6 +62,35 @@ module.exports = (GService, cache) => {
 									})
 									cache.delete(this.id)
 								})
+						},
+
+						reorder (targetId) {
+							const {
+								node: parent,
+								children,
+								...rest
+							} = cache.get(this.pid)
+
+							const targetNode = typeof targetId === 'number'
+								? children[children.findIndex(({ id }) => id === this.id) + targetId]
+								: children.find(({ id }) => id === targetId)
+
+							if (!targetNode || targetNode.id === this.id)
+								return
+
+							GService.reorderNodes(this, targetNode)
+								.then(() => {
+									cache.set(this.pid, {
+										node: parent,
+										children: children.map(n => n.id === this.id
+											? targetNode
+											: n.id === targetNode.id
+											? this
+											: n
+										),
+										...rest
+									})
+								})
 						}
 					})
 
