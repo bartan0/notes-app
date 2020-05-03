@@ -20,14 +20,21 @@ const ChecklistElementItem = ({ nodePath }) => {
 				className={`${C}-label`}
 				actionsRight={[
 					{
-						icon: 'times',
-						title: 'Remove Item',
-						action: () => item.remove()
-					},
-					{
 						icon: item.done ? 'minus' : 'check',
 						title: item.done ? 'Mark as not done' : 'Mark as done',
 						action: () => item.toggle()
+					}, {
+						icon: 'chevron-up',
+						title: 'Move Up',
+						action: () => item.reorder(-1)
+					}, {
+						icon: 'chevron-down',
+						title: 'Move Down',
+						action: () => item.reorder(1)
+					}, {
+						icon: 'ban',
+						title: 'Remove Item',
+						action: () => item.remove()
 					}
 				]}
 				value={item.content}

@@ -25,8 +25,15 @@ const ChecklistElement = ({
 						icon: 'plus',
 						title: 'Add Item',
 						action: () => checklist.addItem()
-					},
-					{
+					}, {
+						icon: 'chevron-up',
+						title: 'Move Up',
+						action: () => checklist.reorder(-1)
+					}, {
+						icon: 'chevron-down',
+						title: 'Move Down',
+						action: () => checklist.reorder(1)
+					}, {
 						icon: 'ban',
 						title: 'Remove Checklist',
 						action: () => checklist.remove()

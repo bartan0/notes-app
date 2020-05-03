@@ -68,7 +68,9 @@ const DocumentElement = withMouseHover(({
 					className={bem('document-element', 'toolbar')}
 					actions={[
 						{ icon: 'edit', title: 'Edit Document', action: () => setMode(Mode.EDIT) },
-						{ icon: 'ban', title: 'Remove Document', action: () => document.remove() }
+						{ icon: 'ban', title: 'Remove Document', action: () => document.remove() },
+						{ icon: 'chevron-up', title: 'Move Up', action: () => document.reorder(-1) },
+						{ icon: 'chevron-down', title: 'Move Down', action: () => document.reorder(1) }
 					]}
 				/>
 			}
