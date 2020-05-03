@@ -1,8 +1,10 @@
 require('./style.sass')
 
 const React = require('react')
+const ButtonGroup = require('local/ui/button-group')
 const { useGService } = require('local/gservice')
 const { bem, markdown } = require('local/lib')
+const { withMouseHover } = require('local/lib/react')
 
 const { useEffect, useRef, useState } = React
 
@@ -13,7 +15,8 @@ const Mode = {
 }
 
 
-const DocumentElement = ({
+const DocumentElement = withMouseHover(({
+	mouseHover,
 	nodePath
 }) => {
 	const textareaRef = useRef()
@@ -59,9 +62,19 @@ const DocumentElement = ({
 					/>
 				</div>
 			}
+
+			{mode === Mode.SHOW && mouseHover &&
+				<ButtonGroup
+					className={bem('document-element', 'toolbar')}
+					actions={[
+						{ icon: 'edit', title: 'Edit Document', action: () => setMode(Mode.EDIT) },
+						{ icon: 'ban', title: 'Remove Document', action: () => document.remove() }
+					]}
+				/>
+			}
 		</div>
 	:
 		null
-}
+})
 
 module.exports = DocumentElement

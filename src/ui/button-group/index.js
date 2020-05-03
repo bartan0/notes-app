@@ -9,13 +9,16 @@ const Icon = require('local/ui/icon')
 
 const ButtonGroup = ({
 	actions,
-	vertical
+	vertical,
+	className
 }) =>
 	createElement('div', {
 		className: classNames(bem('button-group'), {
 			horizontal: !vertical,
 			vertical: vertical
-		})
+		},
+			className
+		)
 	}, actions.map(({
 		action,
 		brand,
