@@ -1,40 +1,51 @@
 require('./style.sass')
 
 const Icon = require('local/ui/icon')
+const { Link } = require('react-router-dom')
 const { NodeStatus, useGService } = require('local/gservice')
 const { bem } = require('local/lib')
 
 const Item = require('./item')
+const ActionButton = require('./action-button')
+
+
+const C = 'dashboard'
 
 
 const Dashboard = () => {
-	const [ items, itemsStatus, root, rootStatus ] = useGService('/')
+	const [ items, itemsStatus, root, rootStatus ] = useGService('/');
 
 	return (
-		<div className={bem('dashboard')}>
-			{itemsStatus === NodeStatus.OK ? items
-				.map(item =>
-					<Item
-						key={item.id}
-						className={bem('dashboard', 'item')}
-						item={item}
-						target={`/note/${item.id}`}
-					/>
-				)
-				.concat(
-					<button
-						key="_add"
-						title="Add Item"
-						className={bem('dashboard', 'item', 'action')}
-						onClick={() => root.append('NOTE')}
-					>
-						<Icon name="plus"/>
-					</button>
-				)
-			:
-				'Loading...'
-			}
-		</div>
+		<main>
+			<div className={`${C}`}>
+				<div className={`${C}__header`}>
+					<h2>Notes</h2>
+
+					<div>
+						<ActionButton
+							title="Add Note"
+							icon="plus"
+							onClick={() => root.append('NOTE')}
+						/>
+					</div>
+				</div>
+
+				{items ?
+					<ul className={`${C}__notes-list`}>
+						{items.map(item =>
+							<Item
+								key={item.id}
+								item={item}
+							/>
+						)}
+					</ul>
+				:
+					<div className={`${C}__loading`}>
+						Loading...
+					</div>
+				}
+			</div>
+		</main>
 	)
 }
 
