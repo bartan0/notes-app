@@ -4,6 +4,10 @@ const { useGService } = require('local/gservice')
 
 const ChecklistElementItem = require('./item')
 
+require('./style.sass')
+
+const C = 'checklist'
+
 
 const ChecklistElement = ({
 	nodePath
@@ -16,7 +20,7 @@ const ChecklistElement = ({
 	] = useGService(`${nodePath}/`)
 
 	return checklist ?
-		<div>
+		<div className={C}>
 			<EditableLabel
 				value={checklist.name}
 				onUpdate={name => checklist.setName(name)}
@@ -41,7 +45,7 @@ const ChecklistElement = ({
 				]}
 			/>
 
-			<div>
+			<div className={C + '__items'}>
 				{items.map(({ id }) =>
 					<ChecklistElementItem key={id} nodePath={`${nodePath}/${id}`}/>
 				)}

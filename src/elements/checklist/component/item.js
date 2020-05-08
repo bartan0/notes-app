@@ -2,6 +2,7 @@ const React = require('react')
 const EditableLabel = require('local/ui/editable-label')
 const { useGService } = require('local/gservice')
 const Icon = require('local/ui/icon')
+const classNames = require('classnames')
 
 require('./item.sass')
 
@@ -12,7 +13,10 @@ const ChecklistElementItem = ({ nodePath }) => {
 	const [ item ] = useGService(nodePath)
 
 	return item ?
-		<div className={C}>
+		<div className={classNames(C, {
+			[`${C}--done`]: item.done,
+			[`${C}--not-done`]: !item.done
+		})}>
 			{item.done &&
 				<Icon className={`${C}-icon`} name="check"/>
 			}
