@@ -4,6 +4,10 @@ const { useGService } = require('local/gservice')
 
 const SteplistItem = require('./item')
 
+require('./style.sass')
+
+const C = 'steplist'
+
 
 const Steplist = ({
 	nodePath
@@ -18,7 +22,7 @@ const Steplist = ({
 		steps.forEach(step => step.setActive(step.id === id && !step.active))
 
 	return steplist ?
-		<div>
+		<div className={C}>
 			<EditableLabel
 				value={steplist.name}
 				actionsRight={[
@@ -44,7 +48,7 @@ const Steplist = ({
 			/>
 
 			{steps.length ?
-				<div>
+				<div className={C + '__steps'}>
 					{steps.map(({ id }) =>
 						<SteplistItem
 							key={id}

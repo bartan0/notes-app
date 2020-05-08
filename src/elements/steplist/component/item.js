@@ -2,6 +2,7 @@ const React = require('react')
 const EditableLabel = require('local/ui/editable-label')
 const Icon = require('local/ui/icon')
 const { useGService } = require('local/gservice')
+const classNames = require('classnames')
 
 require('./item.sass')
 
@@ -12,7 +13,10 @@ const SteplistItem = ({ nodePath, onSetActive }) => {
 	const [ step, stepStatus ] = useGService(nodePath)
 
 	return step ?
-		<div className={C}>
+		<div className={classNames(C, {
+			[C + '--active']: step.active,
+			[C + '--not-active']: !step.active
+		})}>
 			{step.active &&
 				<Icon className={`${C}-active-mark`} name="chevron-right"/>
 			}
