@@ -1,6 +1,7 @@
 require('./style.sass')
 
 const Icon = require('local/ui/icon')
+const { withSignoutButton } = require('local/ui/signout-button')
 const { Link } = require('react-router-dom')
 const { NodeStatus, useGService } = require('local/gservice')
 const { bem } = require('local/lib')
@@ -12,7 +13,7 @@ const ActionButton = require('./action-button')
 const C = 'dashboard'
 
 
-const Dashboard = () => {
+const Dashboard = withSignoutButton(() => {
 	const [ items, itemsStatus, root, rootStatus ] = useGService('/');
 
 	return (
@@ -47,6 +48,6 @@ const Dashboard = () => {
 			</div>
 		</main>
 	)
-}
+})
 
 module.exports = Dashboard

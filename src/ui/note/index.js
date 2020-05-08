@@ -9,6 +9,7 @@ const Icon = require('local/ui/icon')
 const { useHistory } = require('react-router-dom')
 const { useGService } = require('local/gservice')
 const { bem, userConfirm } = require('local/lib')
+const { withSignoutButton } = require('local/ui/signout-button')
 
 const { useState } = React
 
@@ -19,7 +20,7 @@ const NoteElement = {
 }
 
 
-const NoteView = ({ nodePath }) => {
+const NoteView = withSignoutButton(({ nodePath }) => {
 	const [
 		elements,
 		elementsStatus,
@@ -90,6 +91,6 @@ const NoteView = ({ nodePath }) => {
 			}
 		</div>
 	)
-}
+})
 
 module.exports = NoteView
