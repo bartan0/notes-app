@@ -5,7 +5,7 @@ const GService = Object.assign({
 		'https://sheets.googleapis.com/$discovery/rest?version=v4',
 		'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
 	],
-	AUTH_SCOPES: [ 'profile', 'email', 'https://www.googleapis.com/auth/drive' ],
+	AUTH_SCOPES: [ 'profile', 'email', 'https://www.googleapis.com/auth/drive.file' ],
 	DB_FILENAME: _GSERVICE_DB_FILENAME,
 	DB_LOCALE: 'en_US',
 	ROOT_NODE_ID: 'ROOT',
